@@ -4,7 +4,7 @@
 #include <array>
 #include <Eigen/Dense>
 
-#include <bezier/utilities.h>
+#include <bezier/math/misc.h>
 
 namespace bezier {
     using std::array;
