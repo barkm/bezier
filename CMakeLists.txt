@@ -7,7 +7,13 @@ include_directories(include)
 include_directories(/usr/local/include/eigen3/)
 
 
-set(SOURCE_FILES main.cpp include/bezier/bezier_curve.hpp src/math/misc.cpp include/bezier/math/misc.h)
+set(SOURCE_FILES
+        include/bezier/bezier_curve.h
+        src/math/misc.cpp
+        include/bezier/math/misc.h
+        include/bezier/curve.h
+        src/bezier_curve.cpp)
+
 
 add_library(bezier STATIC ${SOURCE_FILES})
 
@@ -19,3 +25,4 @@ target_link_libraries(bezier_curve_test bezier)
 add_executable(math_test test/math_test.cpp)
 target_link_libraries(math_test bezier)
 
+add_executable(main main.cpp)

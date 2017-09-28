@@ -1,29 +1,40 @@
 #define CATCH_CONFIG_MAIN
 #include <catch/catch.hpp>
 
-#include <array>
 
-#include <bezier/bezier_curve.hpp>
+#include <bezier/bezier_curve.h>
 
-using std::array;
+using std::vector;
 using Eigen::Vector2d;
 using Eigen::Vector3d;
 using Eigen::Vector4d;
+using Eigen::VectorXd;
 
+
+TEST_CASE("Bezier coefficients", "[coefficients]"){
+    Eigen::Matrix4d cubic_coeff;
+    cubic_coeff <<   1,  0,  0,  0,
+                    -3,  3,  0,  0,
+                    3, -6,  3,  0,
+                    -1,  3, -3,  1;
+    REQUIRE(bezier::bezier_coefficients(3) == cubic_coeff);
+}
 
 TEST_CASE("Bezier curve construction", "[construction]"){
 
     // create 3-dimensional linear
-    array<array<double, 3>, 2> control_points1 = {{ {{1, -2, 3}}, {{-1, 3, 5}} }};
-    bezier::BezierCurve<1, 3> linear3d(control_points1);
+    vector<VectorXd> control_points1 = { Vector3d(1, -2, 3), Vector3d(-1, 3, 5) };
+    bezier::BezierCurve linear3d(control_points1);
 
     // create 2-dimensional cubic
-    array<Vector2d, 4> control_points2 = {{ Vector2d(1, -1), Vector2d(-1, 3), Vector2d(4, 10), Vector2d(100, -12) }};
-    bezier::BezierCurve<3, 2> cubic2d(control_points2);
+    bezier::BezierCurve cubic2d({ Vector2d(1, -1), Vector2d(-1, 3), Vector2d(4, 10), Vector2d(100, -12) });
 
-    // create 5-dimensional constant
-    array<Vector4d, 1> control_points3 = {Vector4d(1, 2, 3, 4)};
-    bezier::BezierCurve<0, 4> constant4d(control_points3);
+    // create 5-dimensional constant with initializer list
+    bezier::BezierCurve constant4d = {Vector4d(1, 2, 3, 4)};
+
+    SECTION("invalid construction"){
+        REQUIRE_THROWS_AS(bezier::BezierCurve({Vector4d(1, 2, 3, 4), Vector3d(1, 2, 3)}), std::invalid_argument);
+    }
 
     SECTION("degree"){
         REQUIRE(linear3d.degree() == 1);
@@ -38,26 +49,23 @@ TEST_CASE("Bezier curve construction", "[construction]"){
     }
 
     SECTION("control points") {
-        REQUIRE((linear3d.control_points() == array<Vector3d, 2>{{Vector3d(1, -2, 3), Vector3d(-1, 3, 5)}}));
-        REQUIRE((cubic2d.control_points() == control_points2));
-        REQUIRE((constant4d.control_points() == control_points3));
+        REQUIRE((linear3d.control_points() == control_points1));
+        REQUIRE((cubic2d.control_points() == vector<VectorXd>{Vector2d(1, -1), Vector2d(-1, 3), Vector2d(4, 10), Vector2d(100, -12)}));
+        REQUIRE((constant4d.control_points() == vector<VectorXd>{Vector4d(1, 2, 3, 4)}));
     }
 
     SECTION("coefficient matrix"){
-
-        Eigen::Matrix4d cubic_coeff;
-        cubic_coeff <<   1,  0,  0,  0,
-                        -3,  3,  0,  0,
-                         3, -6,  3,  0,
-                        -1,  3, -3,  1;
-        REQUIRE(cubic2d.coefficient_matrix() == cubic_coeff);
+        REQUIRE(linear3d.coefficient_matrix() == bezier::bezier_coefficients(1));
+        REQUIRE(cubic2d.coefficient_matrix() == bezier::bezier_coefficients(3));
+        REQUIRE(constant4d.coefficient_matrix() == bezier::bezier_coefficients(0));
     }
 }
 
+
 TEST_CASE("Bezier curve evaluation", "[evaluation]"){
 
-    array<array<double, 2>, 4> control_points = {{ {{1, -1}}, {{1, 2}}, {{-2, 1}}, {{-2, -1}} }};
-    bezier::BezierCurve<3, 2> cubic2d(control_points);
+    vector<VectorXd> control_points = { Vector2d(1, -1), Vector2d(1, 2), Vector2d(-2, 1), Vector2d(-2, -1) };
+    bezier::BezierCurve cubic2d(control_points);
 
     SECTION("test domain range"){
         REQUIRE_THROWS_AS(cubic2d(-1), std::domain_error);
@@ -75,6 +83,12 @@ TEST_CASE("Bezier curve evaluation", "[evaluation]"){
     SECTION("random points"){
         REQUIRE(cubic2d(0.5) == Vector2d(-4, 7)/8);
         REQUIRE(cubic2d(0.25) == Vector2d(34, 35)/64);
+    }
+
+    SECTION("curve inheritance"){
+        const bezier::Curve & curve = cubic2d;
+        REQUIRE(curve(0.5) == Vector2d(-4, 7)/8);
+        REQUIRE(curve(0.25) == Vector2d(34, 35)/64);
     }
 }
 
