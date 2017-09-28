@@ -8,28 +8,31 @@
 #include <bezier/math/misc.h>
 
 
+
 namespace bezier {
     using std::vector;
+    using Eigen::VectorXd;
+    using Eigen::MatrixXd;
 
     Eigen::MatrixXd bezier_coefficients(int degree);
 
     class BezierCurve : public Curve {
     public:
-        explicit BezierCurve(const vector<Eigen::VectorXd> & control_points);
-        BezierCurve(const std::initializer_list<Eigen::VectorXd> & control_points);
+        explicit BezierCurve(const vector<VectorXd> & control_points);
+        BezierCurve(const std::initializer_list<VectorXd> & control_points);
 
-        vector<Eigen::VectorXd> control_points() const;
-        Eigen::MatrixXd coefficient_matrix() const;
+        vector<VectorXd> control_points() const;
+        MatrixXd coefficient_matrix() const;
 
-        virtual int degree() const;
-        virtual int dimension() const;
-        virtual Eigen::VectorXd operator()(double t) const;
+        virtual unsigned int degree() const;
+        virtual unsigned int dimension() const;
+        virtual VectorXd operator()(double t) const;
+        MatrixXd _control_matrix;
     private:
         unsigned int _degree;
         unsigned int _dimension;
-        vector<Eigen::VectorXd> _control_points;
-        Eigen::MatrixXd _coefficient_matrix;
-        Eigen::MatrixXd _control_matrix;
+        vector<VectorXd> _control_points;
+        MatrixXd _coefficient_matrix;
     };
 }
 

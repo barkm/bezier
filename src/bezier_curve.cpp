@@ -2,8 +2,10 @@
 
 namespace bezier {
     using std::vector;
+    using Eigen::VectorXd;
+    using Eigen::MatrixXd;
 
-    BezierCurve::BezierCurve(const vector<Eigen::VectorXd> &control_points) {
+    BezierCurve::BezierCurve(const vector<VectorXd> &control_points) {
         if (control_points.empty()){
             throw std::invalid_argument("Must at least provide one control point.");
         }
@@ -27,31 +29,31 @@ namespace bezier {
         _coefficient_matrix = bezier_coefficients(_degree);
     }
 
-    BezierCurve::BezierCurve(const std::initializer_list<Eigen::VectorXd> &control_points) :
-            BezierCurve(vector<Eigen::VectorXd>(control_points.begin(), control_points.end())) {}
+    BezierCurve::BezierCurve(const std::initializer_list<VectorXd> &control_points) :
+            BezierCurve(vector<VectorXd>(control_points.begin(), control_points.end())) {}
 
 
-    vector<Eigen::VectorXd> BezierCurve::control_points() const {
+    vector<VectorXd> BezierCurve::control_points() const {
         return _control_points;
     }
 
-    int BezierCurve::degree() const {
+    unsigned int BezierCurve::degree() const {
         return _degree;
     }
 
-    int BezierCurve::dimension() const {
+    unsigned int BezierCurve::dimension() const {
         return _dimension;
     }
 
-    Eigen::MatrixXd BezierCurve::coefficient_matrix() const{
+    MatrixXd BezierCurve::coefficient_matrix() const{
         return _coefficient_matrix;
     }
 
-    Eigen::VectorXd BezierCurve::operator()(double t) const {
+    VectorXd BezierCurve::operator()(double t) const {
         if(t < 0 or t > 1){
             throw std::domain_error("Bezier curve only defined on [0,1].");
         }
-        Eigen::VectorXd tvec(_degree + 1);
+        VectorXd tvec(_degree + 1);
         double t_pow = 1;
         for(int j = 0; j < _degree+1; j++){
             tvec(j) = t_pow;
@@ -62,8 +64,8 @@ namespace bezier {
 
 
 
-    Eigen::MatrixXd bezier_coefficients(int degree){
-        Eigen::MatrixXd coefficient_matrix(degree + 1, degree + 1);
+    MatrixXd bezier_coefficients(int degree){
+        MatrixXd coefficient_matrix(degree + 1, degree + 1);
 
         for(int j = 0; j < degree+1; j++){
             double coeff = factorial(degree) / factorial(degree - j);
