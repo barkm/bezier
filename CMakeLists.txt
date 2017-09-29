@@ -13,7 +13,7 @@ set(SOURCE_FILES
         include/bezier/math/misc.h
         include/bezier/curve.h
         src/bezier_curve.cpp
-        include/bezier/composite_bezier_curve.h src/composite_bezier_curve.cpp)
+        include/bezier/composite_bezier_curve.h src/composite_bezier_curve.cpp src/math/tridiagonal.cpp include/bezier/math/tridiagonal.h)
 
 
 add_library(bezier STATIC ${SOURCE_FILES})
