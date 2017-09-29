@@ -14,8 +14,17 @@ namespace bezier {
                                        const vector<MatrixXd> & upper_diagonal,
                                        const vector<MatrixXd> & rhs);
 
+    vector<MatrixXd> _solve_tridiagonal(const vector<MatrixXd> & lower_diagonal,
+                                       const vector<MatrixXd> & diagonal,
+                                       const vector<MatrixXd> & upper_diagonal,
+                                       const vector<MatrixXd> & rhs);
 
     vector<MatrixXd> solve_off_tridiagonal(const vector<MatrixXd> & lower_diagonal,
+                                           const vector<MatrixXd> & diagonal,
+                                           const vector<MatrixXd> & upper_diagonal,
+                                           const vector<MatrixXd> & rhs);
+
+    vector<MatrixXd> _solve_off_tridiagonal(const vector<MatrixXd> & lower_diagonal,
                                            const vector<MatrixXd> & diagonal,
                                            const vector<MatrixXd> & upper_diagonal,
                                            const vector<MatrixXd> & rhs);
