@@ -10,19 +10,19 @@ namespace bezier {
                                         const vector<MatrixXd> & rhs) {
 
         if(diagonal.empty()){
-            throw std::invalid_argument("Invalid number of block matrix elements 3");
+            throw std::invalid_argument("Invalid number of block matrix elements");
         }
 
         if(diagonal.size() != lower_diagonal.size() + 1 or
            diagonal.size() != upper_diagonal.size() + 1 or
            diagonal.size() != rhs.size()){
-            throw std::invalid_argument("Invalid number of block matrix elements 2");
+            throw std::invalid_argument("Invalid number of block matrix elements");
         }
 
         // upper left corner
         if(diagonal[0].cols() != lower_diagonal[0].cols() or diagonal[0].rows() != upper_diagonal[0].rows() or
                 diagonal[0].rows() != rhs[0].rows()){
-            throw std::invalid_argument("Invalid matrix dimensions 1");
+            throw std::invalid_argument("Invalid matrix dimensions");
         }
 
         // middle
@@ -32,7 +32,7 @@ namespace bezier {
                diagonal[i].rows() != upper_diagonal[i].rows() or
                diagonal[i].rows() != lower_diagonal[i-1].rows() or
                diagonal[i].rows() != rhs[i].rows()){
-                throw std::invalid_argument("Invalid matrix dimensions 2");
+                throw std::invalid_argument("Invalid matrix dimensions");
             }
         }
 
@@ -40,7 +40,7 @@ namespace bezier {
         if(diagonal[diagonal.size()-1].cols() != upper_diagonal[upper_diagonal.size()-1].cols() or
                 diagonal[diagonal.size()-1].rows() != lower_diagonal[lower_diagonal.size()-1].rows() or
                 diagonal[diagonal.size()-1].rows() != rhs[rhs.size()-1].rows()){
-            throw std::invalid_argument("Invalid matrix dimensions 3");
+            throw std::invalid_argument("Invalid matrix dimensions");
         }
 
         return _solve_tridiagonal(lower_diagonal, diagonal, upper_diagonal, rhs);
@@ -100,12 +100,12 @@ namespace bezier {
                                             const vector<MatrixXd> & rhs){
 
         if(diagonal.empty()){
-            throw std::invalid_argument("Invalid number of block matrix elements 3");
+            throw std::invalid_argument("Invalid number of block matrix elements");
         }
 
         if(diagonal.size() == 2){
             if(lower_diagonal.size() != 1 or upper_diagonal.size() != 1 or rhs.size() != 2){
-                throw std::invalid_argument("Invalid number of block matrix elements 3");
+                throw std::invalid_argument("Invalid number of block matrix elements");
             }
 
             // upper left corner

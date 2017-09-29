@@ -31,6 +31,60 @@ TEST_CASE("Factorial tests", "[factorial]"){
 
 TEST_CASE("Tridiagonal solver tests", "[tridiagonal]"){
 
+
+    SECTION("test invalid arguments"){
+        MatrixXd a1, a2, b0, b1, b2, c0, c1, d0, d1, d2;
+
+        Eigen::Matrix<double, 6, 6> M;
+
+        M <<    0, 3,  1, 2,  0, 0,
+                2, 1,  4, 5,  0, 0,
+
+                6, 7,  1, 2,  4, 5,
+                1, 3,  9, 0,  2, 3,
+
+                0, 0,  2, 1,  5, 2,
+                0, 0,  3, 7,  9, 3;
+
+
+        Eigen::Matrix<double, 6, 1> D;
+        D << 0, 2, 3, 1, -9, 2;
+
+        b0 = M.block(0, 0, 2, 2);
+        b1 = M.block(2, 2, 2, 2);
+        b2 = M.block(4, 4, 2, 2);
+
+        c0 = M.block(0, 2, 2, 2);
+        c1 = M.block(2, 4, 2, 2);
+
+        a1 = M.block(2, 0, 2, 2);
+        a2 = M.block(4, 2, 2, 2);
+
+        d0 = D.block(0, 0, 2, 1);
+        d1 = D.block(2, 0, 2, 1);
+        d2 = D.block(4, 0, 2, 1);
+
+        std::vector<MatrixXd> diagonal_elements = {b0, b1, b2};
+        std::vector<MatrixXd> lower_diagonal_elements = {a1, a2};
+        std::vector<MatrixXd> upper_diagonal_elements = {c0, c1};
+        std::vector<MatrixXd> right_hand_side = {d0, d1, d2};
+
+        REQUIRE_THROWS_AS(bezier::solve_tridiagonal({a2}, {b0, b1, b2}, {c0, c1}, {d0, d1, d2}), std::invalid_argument);
+
+        REQUIRE_THROWS_AS(bezier::solve_tridiagonal({a1, a2}, {b1, b2}, {c0, c1}, {d0, d1, d2}), std::invalid_argument);
+
+        REQUIRE_THROWS_AS(bezier::solve_tridiagonal({a1, a2}, {b0, b1, b2}, {c0}, {d0, d1, d2}), std::invalid_argument);
+
+        REQUIRE_THROWS_AS(bezier::solve_tridiagonal({a1, a2}, {b0, b1, b2}, {c0, c1}, {d0, d1}), std::invalid_argument);
+
+        REQUIRE_THROWS_AS(bezier::solve_tridiagonal({a1, a2}, {b0, b1, b2.block(0, 0, 1, 1)}, {c0, c1}, {d0, d1, d2}), std::invalid_argument);
+
+        REQUIRE_THROWS_AS(bezier::solve_tridiagonal({a1, a2.block(0, 0, 1, 1)}, {b0, b1, b2}, {c0, c1}, {d0, d1, d2}), std::invalid_argument);
+
+        REQUIRE_NOTHROW(bezier::solve_tridiagonal({a1, a2}, {b0, b1, b2}, {c0, c1}, {d0, d1, d2}));
+
+    }
+
     SECTION("2x2 matrix system"){
         Eigen::Matrix<double, 2, 2> M;
         M <<    1, 2,
@@ -220,6 +274,64 @@ TEST_CASE("Tridiagonal solver tests", "[tridiagonal]"){
 }
 
 TEST_CASE("Off tridiagonal solver tests", "[offtridiagonal]"){
+
+    SECTION("test invalid arguments"){
+        MatrixXd a0, a1, a2, b0, b1, b2, c0, c1, c2, d0, d1, d2;
+
+        Eigen::Matrix<double, 6, 6> M;
+
+        M <<    0, 3,  1, 2,  2, -1,
+                2, 1,  4, 5,  5, 9,
+
+                6, 7,  1, 2,  4, 5,
+                1, 3,  9, 0,  2, 3,
+
+                2, -1,  2, 1,  5, 2,
+                4, 3,  3, 7,  9, 3;
+
+
+        Eigen::Matrix<double, 6, 1> D;
+        D << 0, 2, 3, 1, -9, 2;
+
+        b0 = M.block(0, 0, 2, 2);
+        b1 = M.block(2, 2, 2, 2);
+        b2 = M.block(4, 4, 2, 2);
+
+        c0 = M.block(0, 2, 2, 2);
+        c1 = M.block(2, 4, 2, 2);
+        c2 = M.block(4, 0, 2, 2);
+
+        a0 = M.block(0, 4, 2, 2);
+        a1 = M.block(2, 0, 2, 2);
+        a2 = M.block(4, 2, 2, 2);
+
+        d0 = D.block(0, 0, 2, 1);
+        d1 = D.block(2, 0, 2, 1);
+        d2 = D.block(4, 0, 2, 1);
+
+        std::vector<MatrixXd> diagonal_elements = {b0, b1, b2};
+        std::vector<MatrixXd> lower_diagonal_elements = {a0, a1, a2};
+        std::vector<MatrixXd> upper_diagonal_elements = {c0, c1, c2};
+        std::vector<MatrixXd> right_hand_side = {d0, d1, d2};
+
+        REQUIRE_THROWS_AS(bezier::solve_off_tridiagonal({a0, a1}, {b0, b1, b2}, {c0, c1, c2}, {d0, d1, d2}), std::invalid_argument);
+
+        REQUIRE_THROWS_AS(bezier::solve_off_tridiagonal({a0, a1, a2}, {b0, b1}, {c0, c1, c2}, {d0, d1, d2}), std::invalid_argument);
+
+        REQUIRE_THROWS_AS(bezier::solve_off_tridiagonal({a0, a1, a2}, {b0, b1, b2}, {c0, c1}, {d0, d1, d2}), std::invalid_argument);
+
+        REQUIRE_THROWS_AS(bezier::solve_off_tridiagonal({a0, a1, a2}, {b0, b1, b2}, {c0, c1, c2}, {d0, d1}), std::invalid_argument);
+
+        REQUIRE_THROWS_AS(bezier::solve_off_tridiagonal({a0, a1.block(0, 0, 1, 1), a2}, {b0, b1, b2}, {c0, c1, c2}, {d0, d1, d2}), std::invalid_argument);
+
+        REQUIRE_THROWS_AS(bezier::solve_off_tridiagonal({a0, a1, a2}, {b0, b1, b2.block(0, 0, 1, 1)}, {c0, c1, c2}, {d0, d1, d2}), std::invalid_argument);
+
+        REQUIRE_THROWS_AS(bezier::solve_off_tridiagonal({a0, a1, a2}, {b0, b1, b2}, {c0, c1, c2.block(0, 0, 1, 1)}, {d0, d1, d2}), std::invalid_argument);
+
+        REQUIRE_THROWS_AS(bezier::solve_off_tridiagonal({a0, a1, a2}, {b0, b1, b2}, {c0, c1, c2}, {d0, d1.block(0, 0, 1, 1), d2}), std::invalid_argument);
+
+        REQUIRE_NOTHROW(bezier::solve_off_tridiagonal({a0, a1, a2}, {b0, b1, b2}, {c0, c1, c2}, {d0, d1, d2}));
+    }
 
     SECTION("2x2 matrix system"){
         Eigen::Matrix<double, 2, 2> M;
