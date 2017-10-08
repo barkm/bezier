@@ -61,15 +61,13 @@ namespace bezier {
         }
 
         unsigned long curve_index;
-        double curve_fraction;
         if (t == 1){
             curve_index = _bezier_curves.size() - 1;
-            curve_fraction = 0;
         }
         else{
             curve_index = static_cast<unsigned long>(std::floor(_bezier_curves.size() * t));
-            curve_fraction = curve_index / (double) _bezier_curves.size();
         }
-        return _bezier_curves[curve_index](t - curve_fraction);
+        double curve_fraction = curve_index / (double) _bezier_curves.size();
+        return _bezier_curves[curve_index]((t - curve_fraction) * _bezier_curves.size());
     }
 }

@@ -19,6 +19,12 @@ namespace bezier {
             throw std::invalid_argument("Invalid number of block matrix elements");
         }
 
+        // special case if there is only one element on the diagonal
+        if(diagonal.size() == 1 and rhs.size() == 1
+           and lower_diagonal.size() == 0 and upper_diagonal.size() == 0){
+            return _solve_tridiagonal(lower_diagonal, diagonal, upper_diagonal, rhs);
+        }
+
         // upper left corner
         if(diagonal[0].cols() != lower_diagonal[0].cols() or diagonal[0].rows() != upper_diagonal[0].rows() or
                 diagonal[0].rows() != rhs[0].rows()){
@@ -61,13 +67,17 @@ namespace bezier {
 
         MatrixXd upper_prime;
 
-        upper_prime = diagonal[0].inverse() * upper_diagonal[0];
-        upper_diagonal_prime[0] = upper_prime;
 
-        for(int i = 1; i < diagonal.size() - 1; i++){
-            upper_prime = (diagonal[i] - lower_diagonal[i - 1] * upper_diagonal_prime[i - 1]).inverse()
-                          * upper_diagonal[i];
-            upper_diagonal_prime[i] = upper_prime;
+        for(int i = 0; i < diagonal.size() - 1; i++){
+            if(i == 0){
+                upper_prime = diagonal[0].inverse() * upper_diagonal[0];
+                upper_diagonal_prime[0] = upper_prime;
+            }
+            else{
+                upper_prime = (diagonal[i] - lower_diagonal[i - 1] * upper_diagonal_prime[i - 1]).inverse()
+                              * upper_diagonal[i];
+                upper_diagonal_prime[i] = upper_prime;
+            }
         }
 
         MatrixXd rhs_el_prime;
@@ -103,7 +113,12 @@ namespace bezier {
             throw std::invalid_argument("Invalid number of block matrix elements");
         }
 
-        if(diagonal.size() == 2){
+        if(diagonal.size() == 1){
+            if(!lower_diagonal.empty() or !upper_diagonal.empty() or rhs.size() != 1){
+                throw std::invalid_argument("Invalid number of block matrix elements");
+            }
+        }
+        else if(diagonal.size() == 2){
             if(lower_diagonal.size() != 1 or upper_diagonal.size() != 1 or rhs.size() != 2){
                 throw std::invalid_argument("Invalid number of block matrix elements");
             }
@@ -178,6 +193,10 @@ namespace bezier {
                                            const vector<MatrixXd> & upper_diagonal,
                                            const vector<MatrixXd> & rhs){
 
+        if(diagonal.size() == 1){
+            MatrixXd x = diagonal[0].fullPivHouseholderQr().solve(rhs[0]);
+            return {x};
+        }
         if(diagonal.size() == 2){
             MatrixXd A(diagonal[0].rows() + diagonal[1].rows(), diagonal[0].cols() + diagonal[1].cols());
             A.block(0, 0, diagonal[0].rows(), diagonal[0].cols()) = diagonal[0];
@@ -190,7 +209,7 @@ namespace bezier {
             b.block(0, 0, rhs[0].rows(), 1) = rhs[0];
             b.block(rhs[0].rows(), 0, rhs[1].rows(), 1) = rhs[1];
 
-            MatrixXd x = A.fullPivHouseholderQr().solve(b);
+            MatrixXd x = _solve_off_tridiagonal({}, {A}, {}, {b})[0];
 
             return {x.block(0, 0, rhs[0].rows(), 1), x.block(rhs[0].rows(), 0, rhs[1].rows(), 1)};
         }

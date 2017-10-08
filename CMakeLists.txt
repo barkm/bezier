@@ -20,14 +20,17 @@ add_library(bezier STATIC ${SOURCE_FILES})
 
 include_directories(test/third-party)
 
-#add_executable(bezier_curve_test test/bezier_curve_test.cpp)
-#target_link_libraries(bezier_curve_test bezier)
+add_executable(bezier_curve_test test/bezier_curve_test.cpp)
+target_link_libraries(bezier_curve_test bezier)
 
-#add_executable(composite_bezier_curve_test test/composite_bezier_curve_test.cpp)
-#target_link_libraries(composite_bezier_curve_test bezier)
+add_executable(composite_bezier_curve_test test/composite_bezier_curve_test.cpp)
+target_link_libraries(composite_bezier_curve_test bezier)
 
-#add_executable(math_test test/math_test.cpp)
-#target_link_libraries(math_test bezier)
+add_executable(fit_composite_bezier_curve_test test/fit_composite_bezier_curve_test.cpp)
+target_link_libraries(fit_composite_bezier_curve_test bezier)
+
+add_executable(math_test test/math_test.cpp)
+target_link_libraries(math_test bezier)
 
 add_executable(main main.cpp)
 target_link_libraries(main bezier)

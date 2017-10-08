@@ -82,7 +82,19 @@ TEST_CASE("Tridiagonal solver tests", "[tridiagonal]"){
         REQUIRE_THROWS_AS(bezier::solve_tridiagonal({a1, a2.block(0, 0, 1, 1)}, {b0, b1, b2}, {c0, c1}, {d0, d1, d2}), std::invalid_argument);
 
         REQUIRE_NOTHROW(bezier::solve_tridiagonal({a1, a2}, {b0, b1, b2}, {c0, c1}, {d0, d1, d2}));
+    }
 
+    SECTION("1x1 matrix system"){
+        Eigen::Matrix<double, 2, 2> M;
+        M <<    1, 2,
+                3, 4;
+        Eigen::Matrix<double, 2, 1> D;
+        D <<    5, 6;
+
+        std::vector<Eigen::MatrixXd> solution = bezier::solve_tridiagonal({}, {M}, {}, {D});
+        Eigen::Matrix<double, 2, 1> eigen_solution = M.fullPivHouseholderQr().solve(D);
+
+        REQUIRE(solution[0].isApprox(eigen_solution));
     }
 
     SECTION("2x2 matrix system"){
@@ -331,6 +343,19 @@ TEST_CASE("Off tridiagonal solver tests", "[offtridiagonal]"){
         REQUIRE_THROWS_AS(bezier::solve_off_tridiagonal({a0, a1, a2}, {b0, b1, b2}, {c0, c1, c2}, {d0, d1.block(0, 0, 1, 1), d2}), std::invalid_argument);
 
         REQUIRE_NOTHROW(bezier::solve_off_tridiagonal({a0, a1, a2}, {b0, b1, b2}, {c0, c1, c2}, {d0, d1, d2}));
+    }
+
+    SECTION("1x1 matrix system"){
+        Eigen::Matrix<double, 2, 2> M;
+        M <<    1, 2,
+                3, 4;
+        Eigen::Matrix<double, 2, 1> D;
+        D <<    5, 6;
+
+        std::vector<Eigen::MatrixXd> solution = bezier::solve_off_tridiagonal({}, {M}, {}, {D});
+        Eigen::Matrix<double, 2, 1> eigen_solution = M.fullPivHouseholderQr().solve(D);
+
+        REQUIRE(solution[0].isApprox(eigen_solution));
     }
 
     SECTION("2x2 matrix system"){
