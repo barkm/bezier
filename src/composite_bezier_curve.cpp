@@ -54,6 +54,10 @@ namespace bezier {
         return _dimension;
     }
 
+    vector<BezierCurve> CompositeBezierCurve::bezier_curves() const {
+        return _bezier_curves;
+    }
+
 
     VectorXd CompositeBezierCurve::operator()(double t) const {
         if(t < 0 or t > 1){

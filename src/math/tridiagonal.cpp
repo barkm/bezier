@@ -4,6 +4,17 @@
 
 namespace bezier {
 
+    std::string _invalid_number_of_elements_message(const vector<MatrixXd> & lower_diagonal,
+                                       const vector<MatrixXd> & diagonal,
+                                       const vector<MatrixXd> & upper_diagonal,
+                                       const vector<MatrixXd> & rhs) {
+        return std::string("Invalid number of block matrix elements:"
+                                   " diagonal: " + std::to_string(diagonal.size()) +
+                           ", lower: " + std::to_string(lower_diagonal.size()) +
+                           ", upper: " + std::to_string(upper_diagonal.size()) +
+                           ", rhs: " + std::to_string(rhs.size()));
+    }
+
     vector<MatrixXd> solve_tridiagonal(const vector<MatrixXd> & lower_diagonal,
                                         const vector<MatrixXd> & diagonal,
                                         const vector<MatrixXd> & upper_diagonal,
@@ -47,6 +58,15 @@ namespace bezier {
                 diagonal[diagonal.size()-1].rows() != lower_diagonal[lower_diagonal.size()-1].rows() or
                 diagonal[diagonal.size()-1].rows() != rhs[rhs.size()-1].rows()){
             throw std::invalid_argument("Invalid matrix dimensions");
+        }
+
+        // check that all rhs matrices have same number of columns
+        long col_size = rhs[0].cols();
+        for (const auto & r : rhs) {
+            if (r.cols() != col_size){
+                throw std::invalid_argument("Invalid matrix dimensions. All right hand side matrices must"
+                                                    " have the same number of columns.");
+            }
         }
 
         return _solve_tridiagonal(lower_diagonal, diagonal, upper_diagonal, rhs);
@@ -115,7 +135,10 @@ namespace bezier {
 
         if(diagonal.size() == 1){
             if(!lower_diagonal.empty() or !upper_diagonal.empty() or rhs.size() != 1){
-                throw std::invalid_argument("Invalid number of block matrix elements");
+                throw std::invalid_argument(_invalid_number_of_elements_message(lower_diagonal,
+                                                                                diagonal,
+                                                                                upper_diagonal,
+                                                                                rhs));
             }
         }
         else if(diagonal.size() == 2){
@@ -184,6 +207,15 @@ namespace bezier {
 
         }
 
+        // check that all rhs matrices have same number of columns
+        long col_size = rhs[0].cols();
+        for (const auto & r : rhs) {
+            if (r.cols() != col_size){
+                throw std::invalid_argument("Invalid matrix dimensions. All right hand side matrices must"
+                                                    " have the same number of columns.");
+            }
+        }
+
         return _solve_off_tridiagonal(lower_diagonal, diagonal, upper_diagonal, rhs);
     }
 
@@ -205,13 +237,13 @@ namespace bezier {
             A.block(0, diagonal[0].cols(), upper_diagonal[0].rows(), upper_diagonal[0].cols()) = upper_diagonal[0];
             A.block(diagonal[0].rows(), 0, lower_diagonal[0].rows(), lower_diagonal[0].cols()) = lower_diagonal[0];
 
-            MatrixXd b(rhs[0].rows() + rhs[1].rows(), 1);
-            b.block(0, 0, rhs[0].rows(), 1) = rhs[0];
-            b.block(rhs[0].rows(), 0, rhs[1].rows(), 1) = rhs[1];
+            MatrixXd b(rhs[0].rows() + rhs[1].rows(), rhs[0].cols());
+            b.block(0, 0, rhs[0].rows(), rhs[0].cols()) = rhs[0];
+            b.block(rhs[0].rows(), 0, rhs[1].rows(), rhs[1].cols()) = rhs[1];
 
             MatrixXd x = _solve_off_tridiagonal({}, {A}, {}, {b})[0];
 
-            return {x.block(0, 0, rhs[0].rows(), 1), x.block(rhs[0].rows(), 0, rhs[1].rows(), 1)};
+            return {x.block(0, 0, rhs[0].rows(), rhs[0].cols()), x.block(rhs[0].rows(), 0, rhs[1].rows(), rhs[1].cols())};
         }
 
         vector<MatrixXd> newlower_diagonal, newdiagonal, newupper_diagonal, newrhs;

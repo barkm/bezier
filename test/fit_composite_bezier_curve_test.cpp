@@ -66,7 +66,8 @@ TEST_CASE("Fit with parameterization tests", "[with parameterization]"){
         }
 
         SECTION("parameterization not given for every point"){
-            vector<vector<VectorXd>>data_points = {{Scalar(0.232), Scalar(0.43), Scalar(0.3434), Scalar(0.343), Scalar(0.123), Scalar(-0.32)}};
+            vector<vector<VectorXd>>data_points = {{Scalar(0.232), Scalar(0.43), Scalar(0.3434),
+                                                           Scalar(0.343), Scalar(0.123), Scalar(-0.32)}};
             vector<vector<double>> parameterization = {{0, 0.1, 0.4, 0.5, 0.75}};
             vector<int> curve_degrees = {5};
             bool closed_curve = false;
@@ -79,8 +80,9 @@ TEST_CASE("Fit with parameterization tests", "[with parameterization]"){
         }
 
 
-        SECTION("parameterization out of range"){
-            vector<vector<VectorXd>> data_points = {{Scalar(0.232), Scalar(0.43), Scalar(0.3434), Scalar(0.343), Scalar(0.123), Scalar(-0.32)}};
+        SECTION("parameterization out of range") {
+            vector<vector<VectorXd>> data_points = {{Scalar(0.232), Scalar(0.43), Scalar(0.3434), Scalar(0.343), Scalar(
+                    0.123), Scalar(-0.32)}};
             vector<vector<double>> parameterization = {{0, 0.1, 0.4, 0.5, 2}};
             vector<int> curve_degrees = {5};
             bool closed_curve = false;
@@ -90,13 +92,24 @@ TEST_CASE("Fit with parameterization tests", "[with parameterization]"){
                                                                  curve_degrees,
                                                                  closed_curve),
                               std::invalid_argument);
+        }
+        SECTION("ambigiuous paramterization"){
 
-            data_points = {{Vector3d(2, 1, 0), Vector3d(-1, 3, 2), Vector3d(10, 2, -1), Vector3d(5, 3, 2)},
-                           {Vector3d(5, 3, 2), Vector3d(1, 0, 0)},
-                           {Vector3d(1, 0, 0), Vector3d(5, 4, 3)}};
-            parameterization = {{0, 0.25, 0.75, 1}, {0, 1}, {0.25, 0.75, 1}};
-            curve_degrees = {3, 3, 3};
-            closed_curve = false;
+            vector<vector<VectorXd>> data_points = {{Vector3d(2, 1, 0), Vector3d(-1, 3, 2), Vector3d(10, 2, -1), Vector3d(5, 3, 2)},
+                                                    {Vector3d(5, 3, 2), Vector3d(1, 0, 0)},
+                                                    {Vector3d(1, 0, 0), Vector3d(5, 4, 3)}};
+            vector<vector<double>> parameterization = {{0, 0.25, 0.75, 1}, {0, 1}, {0.25, 0.75, 1}};
+            vector<int> curve_degrees = {3, 3, 3};
+            bool closed_curve = false;
+
+            REQUIRE_THROWS_AS(bezier::fit_composite_bezier_curve(data_points,
+                                                                 parameterization,
+                                                                 curve_degrees,
+                                                                 closed_curve),
+                              std::invalid_argument);
+
+            parameterization = {{0, 0.25, 0.75, 1}, {0.1, 1}, {0.25, 0.75, 1}};
+            closed_curve = true;
 
             REQUIRE_THROWS_AS(bezier::fit_composite_bezier_curve(data_points,
                                                                  parameterization,
@@ -110,56 +123,146 @@ TEST_CASE("Fit with parameterization tests", "[with parameterization]"){
     }
 
     SECTION("interpolation"){
-        vector<vector<VectorXd>> data_points = {{Vector2d(2, 1), Vector2d(-1, 3), Vector2d(10, 2), Vector2d(5, 3)}};
-        vector<vector<double>> parameterization = {{0, 0.25, 0.75, 1}};
-        vector<int> curve_degrees = {3};
-        bool closed_curve = false;
 
-        bezier::CompositeBezierCurve curve = bezier::fit_composite_bezier_curve(data_points,
-                                                                                parameterization,
-                                                                                curve_degrees,
-                                                                                closed_curve);
-        REQUIRE(curve.dimension() == 2);
-        REQUIRE(curve(parameterization[0][0]).isApprox(data_points[0][0]));
-        REQUIRE(curve(parameterization[0][1]).isApprox(data_points[0][1]));
-        REQUIRE(curve(parameterization[0][2]).isApprox(data_points[0][2]));
-        REQUIRE(curve(parameterization[0][3]).isApprox(data_points[0][3]));
+        SECTION("single curve"){
+
+            SECTION("open curve"){
+                vector<vector<VectorXd>> data_points = {{Vector2d(2, 1), Vector2d(-1, 3), Vector2d(10, 2), Vector2d(5, 3)}};
+                vector<vector<double>> parameterization = {{0, 0.25, 0.75, 1}};
+                vector<int> curve_degrees = {3};
+                bool closed_curve = false;
+
+                bezier::CompositeBezierCurve curve = bezier::fit_composite_bezier_curve(data_points,
+                                                                                        parameterization,
+                                                                                        curve_degrees,
+                                                                                        closed_curve);
+                REQUIRE(curve.dimension() == 2);
+                REQUIRE(curve(parameterization[0][0]).isApprox(data_points[0][0]));
+                REQUIRE(curve(parameterization[0][1]).isApprox(data_points[0][1]));
+                REQUIRE(curve(parameterization[0][2]).isApprox(data_points[0][2]));
+                REQUIRE(curve(parameterization[0][3]).isApprox(data_points[0][3]));
 
 
-        data_points = {{Vector3d(2, 1, 0), Vector3d(-1, 3, 2), Vector3d(10, 2, -1), Vector3d(5, 3, 2)},
-                       {Vector3d(5, 3, 2), Vector3d(1, 0, 0)},
-                       {Vector3d(1, 0, 0), Vector3d(-1, -2, -3), Vector3d(5, 4, 3)}};
-        parameterization = {{0, 0.75, 0.25, 1}, {0.25, 1}, {0.25, 0.75, 1}};
-        curve_degrees = {3, 3, 4};
-        closed_curve = false;
+                data_points = {{Scalar(0.232), Scalar(0.43), Scalar(0.3434), Scalar(0.343), Scalar(0.123), Scalar(-0.32)}};
+                parameterization = {{0, 0.75, 0.4, 0.5, 0.1, 0.9}};
+                curve_degrees = {5};
+                closed_curve = false;
+                curve = bezier::fit_composite_bezier_curve(data_points,
+                                                           parameterization,
+                                                           curve_degrees,
+                                                           closed_curve);
+                REQUIRE(curve.dimension() == 1);
+                for (int i = 0; i < data_points.size(); ++i) {
+                    for (int j = 0; j < data_points[i].size(); ++j) {
+                        REQUIRE(curve((i + parameterization[i][j]) / ((double) data_points.size()))
+                                        .isApprox(data_points[i][j], 1e-8));
+                    }
+                }
+            }
 
-        curve = bezier::fit_composite_bezier_curve(data_points,
-                                                   parameterization,
-                                                   curve_degrees,
-                                                   closed_curve);
+            SECTION("closed curve"){
+                vector<vector<VectorXd>> data_points = {{Scalar(0.232), Scalar(0.43), Scalar(0.3434), Scalar(0.343)}};
+                vector<vector<double>> parameterization = {{0, 0.75, 0.4, 0.9}};
+                vector<int> curve_degrees = {5};
+                bool closed_curve = true;
+                bezier::CompositeBezierCurve curve = bezier::fit_composite_bezier_curve(data_points,
+                                                                                        parameterization,
+                                                                                        curve_degrees,
+                                                                                        closed_curve);
 
-        REQUIRE(curve.dimension() == 3);
-        for (int i = 0; i < data_points.size(); ++i) {
-            for (int j = 0; j < data_points[i].size(); ++j) {
-                REQUIRE(curve((i + parameterization[i][j]) / ((double) data_points.size())).isApprox(data_points[i][j]));
+                REQUIRE(curve.dimension() == 1);
+                for (int i = 0; i < data_points.size(); ++i) {
+                    for (int j = 0; j < data_points[i].size(); ++j) {
+                        REQUIRE(curve((i + parameterization[i][j]) / ((double) data_points.size()))
+                                        .isApprox(data_points[i][j], 1e-8));
+                    }
+                }
+                REQUIRE(curve(0) == curve(1));
+
+                parameterization = {{0.3, 0.75, 0.4, 1}};
+                curve = bezier::fit_composite_bezier_curve(data_points,
+                                                           parameterization,
+                                                           curve_degrees,
+                                                           closed_curve);
+
+                REQUIRE(curve.dimension() == 1);
+                for (int i = 0; i < data_points.size(); ++i) {
+                    for (int j = 0; j < data_points[i].size(); ++j) {
+                        REQUIRE(curve((i + parameterization[i][j]) / ((double) data_points.size()))
+                                        .isApprox(data_points[i][j], 1e-8));
+                    }
+                }
+                REQUIRE(curve(0) == curve(1));
+
+            }
+
+        }
+
+        SECTION("composite curve"){
+
+            SECTION("open curve"){
+                vector<vector<VectorXd>> data_points = {{Vector3d(2, 1, 0), Vector3d(-1, 3, 2), Vector3d(10, 2, -1), Vector3d(5, 3, 2)},
+                                                        {Vector3d(5, 3, 2), Vector3d(1, 0, 0)},
+                                                        {Vector3d(1, 0, 0), Vector3d(-1, -2, -3), Vector3d(5, 4, 3)}};
+                vector<vector<double>> parameterization = {{0, 0.75, 0.25, 1}, {0.25, 1}, {0.25, 0.75, 1}};
+                vector<int> curve_degrees = {3, 3, 4};
+                bool closed_curve = false;
+
+                bezier::CompositeBezierCurve curve = bezier::fit_composite_bezier_curve(data_points,
+                                                                                        parameterization,
+                                                                                        curve_degrees,
+                                                                                        closed_curve);
+                REQUIRE(curve.dimension() == 3);
+                for (int i = 0; i < data_points.size(); ++i) {
+                    for (int j = 0; j < data_points[i].size(); ++j) {
+                        REQUIRE(curve((i + parameterization[i][j]) / ((double) data_points.size())).isApprox(data_points[i][j]));
+                    }
+                }
+            }
+
+            SECTION("closed curve"){
+                vector<vector<VectorXd>> data_points = {{Vector3d(2, 1, 0), Vector3d(-1, 3, 2)},
+                                                        {Vector3d(5, 3, 2), Vector3d(1, 0, 0)},
+                                                        {Vector3d(1, 0, 0), Vector3d(-1, -2, -3), Vector3d(5, 4, 3)}};
+                vector<vector<double>> parameterization = {{0, 0.75}, {0.25, 1}, {0.25, 0.75, 0.9}};
+                vector<int> curve_degrees = {3, 3, 4};
+                bool closed_curve = true;
+
+                bezier::CompositeBezierCurve curve = bezier::fit_composite_bezier_curve(data_points,
+                                                                                        parameterization,
+                                                                                        curve_degrees,
+                                                                                        closed_curve);
+                REQUIRE(curve.dimension() == 3);
+                for (int i = 0; i < data_points.size(); ++i) {
+                    for (int j = 0; j < data_points[i].size(); ++j) {
+                        REQUIRE(curve((i + parameterization[i][j]) / ((double) data_points.size()))
+                                        .isApprox(data_points[i][j], 1e-8));
+                    }
+                }
+                REQUIRE(curve(0) == curve(1));
+
+                data_points = {{Vector3d(2, 1, 0), Vector3d(-1, 3, 2)},
+                               {Vector3d(1, 0, 0), Vector3d(-1, -2, -3), Vector3d(5, 4, 3)}};
+                parameterization = {{0, 0.75}, {0.25, 0.75, 0.9}};
+                curve_degrees = {3, 4};
+                closed_curve = true;
+
+                curve = bezier::fit_composite_bezier_curve(data_points,
+                                                           parameterization,
+                                                           curve_degrees,
+                                                           closed_curve);
+
+                REQUIRE(curve.dimension() == 3);
+                for (int i = 0; i < data_points.size(); ++i) {
+                    for (int j = 0; j < data_points[i].size(); ++j) {
+                        REQUIRE(curve((i + parameterization[i][j]) / ((double) data_points.size()))
+                                        .isApprox(data_points[i][j], 1e-8));
+                    }
+                }
+                REQUIRE(curve(0) == curve(1));
             }
         }
 
-        data_points = {{Scalar(0.232), Scalar(0.43), Scalar(0.3434), Scalar(0.343), Scalar(0.123), Scalar(-0.32)}};
-        parameterization = {{0, 0.75, 0.4, 0.5, 0.1, 1}};
-        curve_degrees = {5};
-        closed_curve = false;
-        curve = bezier::fit_composite_bezier_curve(data_points,
-                                                   parameterization,
-                                                   curve_degrees,
-                                                   closed_curve);
-        REQUIRE(curve.dimension() == 1);
-        for (int i = 0; i < data_points.size(); ++i) {
-            for (int j = 0; j < data_points[i].size(); ++j) {
-                REQUIRE(curve((i + parameterization[i][j]) / ((double) data_points.size()))
-                                .isApprox(data_points[i][j], 1e-8));
-            }
-        }
     }
 
 
