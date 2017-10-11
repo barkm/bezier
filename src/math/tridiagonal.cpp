@@ -21,13 +21,19 @@ namespace bezier {
                                         const vector<MatrixXd> & rhs) {
 
         if(diagonal.empty()){
-            throw std::invalid_argument("Invalid number of block matrix elements");
+            throw std::invalid_argument(_invalid_number_of_elements_message(lower_diagonal,
+                                                                            diagonal,
+                                                                            upper_diagonal,
+                                                                            rhs));
         }
 
         if(diagonal.size() != lower_diagonal.size() + 1 or
            diagonal.size() != upper_diagonal.size() + 1 or
            diagonal.size() != rhs.size()){
-            throw std::invalid_argument("Invalid number of block matrix elements");
+            throw std::invalid_argument(_invalid_number_of_elements_message(lower_diagonal,
+                                                                            diagonal,
+                                                                            upper_diagonal,
+                                                                            rhs));
         }
 
         // special case if there is only one element on the diagonal
@@ -130,7 +136,10 @@ namespace bezier {
                                             const vector<MatrixXd> & rhs){
 
         if(diagonal.empty()){
-            throw std::invalid_argument("Invalid number of block matrix elements");
+            throw std::invalid_argument(_invalid_number_of_elements_message(lower_diagonal,
+                                                                            diagonal,
+                                                                            upper_diagonal,
+                                                                            rhs));
         }
 
         if(diagonal.size() == 1){
@@ -143,7 +152,10 @@ namespace bezier {
         }
         else if(diagonal.size() == 2){
             if(lower_diagonal.size() != 1 or upper_diagonal.size() != 1 or rhs.size() != 2){
-                throw std::invalid_argument("Invalid number of block matrix elements");
+                throw std::invalid_argument(_invalid_number_of_elements_message(lower_diagonal,
+                                                                                diagonal,
+                                                                                upper_diagonal,
+                                                                                rhs));
             }
 
             // upper left corner

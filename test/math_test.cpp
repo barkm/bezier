@@ -198,8 +198,9 @@ TEST_CASE("Tridiagonal solver tests", "[tridiagonal]"){
                 13, 14,     5, 16, 1,
                 3, 2,       0, -1, 3;
 
-        Eigen::Matrix<double, 5, 1> D;
-        D << 17, 18, 19, 20, 2;
+        Eigen::Matrix<double, 5, 2> D;
+        D << 17, 18, 19, 20, 2,
+                23, 43, -2, 5, 7;
 
         Eigen::Matrix<double, 3, 2> a1 = M.block(2, 0, 3, 2);
 
@@ -208,16 +209,16 @@ TEST_CASE("Tridiagonal solver tests", "[tridiagonal]"){
 
         Eigen::Matrix<double, 2, 3> c0 = M.block(0, 2, 2, 3);
 
-        Eigen::Matrix<double, 2, 1> d0 = D.block(0, 0, 2, 1);
-        Eigen::Matrix<double, 3, 1> d1 = D.block(2, 0, 3, 1);
+        Eigen::Matrix<double, 2, 2> d0 = D.block(0, 0, 2, 2);
+        Eigen::Matrix<double, 3, 2> d1 = D.block(2, 0, 3, 2);
 
         std::vector<Eigen::MatrixXd> solution = bezier::solve_tridiagonal({a1}, {b0, b1}, {c0}, {d0, d1});
 
-        Eigen::Matrix<double, 5, 1> bezier_solution;
-        bezier_solution.block(0, 0, 2, 1) = solution[0];
-        bezier_solution.block(2, 0, 3, 1) = solution[1];
+        Eigen::Matrix<double, 5, 2> bezier_solution;
+        bezier_solution.block(0, 0, 2, 2) = solution[0];
+        bezier_solution.block(2, 0, 3, 2) = solution[1];
 
-        Eigen::Matrix<double, 5, 1> eigen_solution = M.fullPivHouseholderQr().solve(D);
+        Eigen::Matrix<double, 5, 2> eigen_solution = M.fullPivHouseholderQr().solve(D);
 
         REQUIRE(bezier_solution.isApprox(eigen_solution));
 
@@ -470,8 +471,9 @@ TEST_CASE("Off tridiagonal solver tests", "[offtridiagonal]"){
                 13, 14,     5, 16, 1,
                 3, 2,       0, -1, 3;
 
-        Eigen::Matrix<double, 5, 1> D;
-        D << 17, 18, 19, 20, 2;
+        Eigen::Matrix<double, 5, 2> D;
+        D << 17, 18, 19, 20, 2,
+                23, 43, -2, 5, 7;
 
         Eigen::Matrix<double, 3, 2> a1 = M.block(2, 0, 3, 2);
 
@@ -480,16 +482,16 @@ TEST_CASE("Off tridiagonal solver tests", "[offtridiagonal]"){
 
         Eigen::Matrix<double, 2, 3> c0 = M.block(0, 2, 2, 3);
 
-        Eigen::Matrix<double, 2, 1> d0 = D.block(0, 0, 2, 1);
-        Eigen::Matrix<double, 3, 1> d1 = D.block(2, 0, 3, 1);
+        Eigen::Matrix<double, 2, 2> d0 = D.block(0, 0, 2, 2);
+        Eigen::Matrix<double, 3, 2> d1 = D.block(2, 0, 3, 2);
 
         std::vector<Eigen::MatrixXd> solution = bezier::solve_off_tridiagonal({a1}, {b0, b1}, {c0}, {d0, d1});
 
-        Eigen::Matrix<double, 5, 1> bezier_solution;
-        bezier_solution.block(0, 0, 2, 1) = solution[0];
-        bezier_solution.block(2, 0, 3, 1) = solution[1];
+        Eigen::Matrix<double, 5, 2> bezier_solution;
+        bezier_solution.block(0, 0, 2, 2) = solution[0];
+        bezier_solution.block(2, 0, 3, 2) = solution[1];
 
-        Eigen::Matrix<double, 5, 1> eigen_solution = M.fullPivHouseholderQr().solve(D);
+        Eigen::Matrix<double, 5, 2> eigen_solution = M.fullPivHouseholderQr().solve(D);
 
         REQUIRE(bezier_solution.isApprox(eigen_solution));
 
