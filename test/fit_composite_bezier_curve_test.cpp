@@ -10,6 +10,34 @@ using Eigen::VectorXd;
 typedef Eigen::Matrix<double, 1, 1> Scalar;
 
 
+TEST_CASE("Chordlength parameterization tests", "[chordlengthparam]"){
+
+    vector<VectorXd> data_points = {Vector2d(0, 1), Vector2d(0, 3), Vector2d(0, 4)};
+    Vector2d start_point(0, 0);
+
+    vector<double> parameterization = bezier::chordlength_parameterization(data_points, start_point);
+
+    REQUIRE(parameterization[0] == 0.25);
+    REQUIRE(parameterization[1] == 0.75);
+    REQUIRE(parameterization[2] == 1);
+}
+
+TEST_CASE("Initializing parameterization test", "[initparam]"){
+    vector<vector<VectorXd>> data_points = {{Vector2d(0, 0), Vector2d(0, 2.5), Vector2d(0, 5)},
+                                    {Vector2d(0, 6), Vector2d(0, 10), Vector2d(0, 15), Vector2d(0, 25)}};
+    vector<vector<double>> parameterization = bezier::initialize_parameterization(data_points);
+
+    REQUIRE(parameterization[0][0] == 0);
+    REQUIRE(parameterization[0][1] == 0.5);
+    REQUIRE(parameterization[0][2] == 1);
+
+    REQUIRE(parameterization[1][0] == 0.05);
+    REQUIRE(parameterization[1][1] == 0.25);
+    REQUIRE(parameterization[1][2] == 0.5);
+    REQUIRE(parameterization[1][3] == 1);
+}
+
+
 TEST_CASE("Fit with parameterization tests", "[with parameterization]"){
 
     SECTION("invalid arguments"){

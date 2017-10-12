@@ -22,6 +22,22 @@ namespace bezier {
                                                     const vector<vector<double>> & parameterization,
                                                     const vector<int> & curve_degrees,
                                                     bool closed_curve);
+
+    CompositeBezierCurve fit_composite_bezier_curve(const vector<vector<VectorXd>> & data_points,
+                                                    const vector<int> & curve_degrees,
+                                                    bool closed_curve);
+
+    CompositeBezierCurve fit_composite_bezier_curve(const vector<VectorXd> & data_points,
+                                                    const vector<int> & joints,
+                                                    const vector<int> & curve_degrees,
+                                                    bool closed_curve);
+
+    vector<double> chordlength_parameterization(const vector<VectorXd> &data_points,
+                                                const VectorXd &start_point = VectorXd(0));
+
+    vector<vector<double>> initialize_parameterization(const vector<vector<VectorXd>> & data_points);
+
+    MatrixXd parameterization_matrix(const vector<double> &parameterization, int degree);
 }
 
 

@@ -13,7 +13,7 @@ set(SOURCE_FILES
         include/bezier/math/misc.h
         include/bezier/curve.h
         src/bezier_curve.cpp
-        include/bezier/composite_bezier_curve.h src/composite_bezier_curve.cpp src/math/tridiagonal.cpp include/bezier/math/tridiagonal.h src/fit_composite_bezier_curve.cpp include/bezier/fit_composite_bezier_curve.h)
+        include/bezier/composite_bezier_curve.h src/composite_bezier_curve.cpp src/math/tridiagonal.cpp include/bezier/math/tridiagonal.h src/fit_composite_bezier_curve.cpp include/bezier/fit_composite_bezier_curve.h include/bezier/utilities.h)
 
 
 add_library(bezier STATIC ${SOURCE_FILES})
@@ -31,6 +31,9 @@ target_link_libraries(fit_composite_bezier_curve_test bezier)
 
 add_executable(math_test test/math_test.cpp)
 target_link_libraries(math_test bezier)
+
+add_executable(utilities_test test/utilities_test.cpp)
+target_link_libraries(utilities_test bezier)
 
 add_executable(main main.cpp)
 target_link_libraries(main bezier)
