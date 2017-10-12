@@ -1,6 +1,7 @@
 #include "bezier/fit_composite_bezier_curve.h"
 
 #include <bezier/math/tridiagonal.h>
+#include <bezier/utilities.h>
 
 #include <iostream>
 
@@ -11,10 +12,70 @@ namespace bezier {
     using Eigen::VectorXd;
 
 
-    MatrixXd _parameterization_matrix(const vector<double> &parameterization, int degree){
+    vector<double> chordlength_parameterization(const vector<VectorXd> &data_points,
+                                                const VectorXd &start_point){
+        // get total length
+        double total_length = 0;
+        if(start_point.rows() != 0){
+            total_length += (data_points[0]-start_point).norm();
+        }
+        for(int i = 1; i < data_points.size(); i++){
+            total_length += (data_points[i] - data_points[i-1]).norm();
+        }
 
+        // find parameterization
+        vector<double> parameterization;
+        double length = 0;
+        if(start_point.rows() != 0) {
+            length += (data_points[0] - start_point).norm();
+        }
+
+        parameterization.push_back(length / total_length);
+        for(int i = 1; i < data_points.size(); i++){
+            length += (data_points[i] - data_points[i-1]).norm();
+            parameterization.push_back(length / total_length);
+        }
+
+        return parameterization;
+    }
+
+    vector<vector<double>> initialize_parameterization(const vector<vector<VectorXd>> & data_points){
+        vector<vector<double>> parameterization;
+        for(int i = 0; i < data_points.size(); i++){
+            if(i != 0){
+                parameterization.push_back(chordlength_parameterization(data_points[i],
+                                                                        *(data_points[i - 1].end() - 1)));
+            }
+            else{
+                parameterization.push_back(chordlength_parameterization(data_points[i]));
+            }
+        }
+        return parameterization;
+    }
+
+
+
+    CompositeBezierCurve fit_composite_bezier_curve(const vector<VectorXd> & data_points,
+                                                    const vector<int> & joints,
+                                                    const vector<int> & curve_degrees,
+                                                    bool closed_curve){
+        return fit_composite_bezier_curve(partition_data<VectorXd>(data_points, joints),
+                                          curve_degrees, closed_curve);
+    }
+
+
+    CompositeBezierCurve fit_composite_bezier_curve(const vector<vector<VectorXd>> & data_points,
+                                                    const vector<int> & curve_degrees,
+                                                    bool closed_curve){
+        return fit_composite_bezier_curve(data_points,
+                                          initialize_parameterization(data_points),
+                                          curve_degrees,
+                                          closed_curve);
+    }
+
+
+    MatrixXd parameterization_matrix(const vector<double> &parameterization, int degree){
         MatrixXd T(parameterization.size(), degree+1);
-
         for(int i = 0; i < parameterization.size(); i++){
             double t = 1;
             for(int j = 0; j < degree + 1; j++){
@@ -110,7 +171,7 @@ namespace bezier {
         vector<MatrixXd> t_matrices;
         vector<MatrixXd> t_product_matrices;
         for (int j = 0; j < number_of_curves; ++j) {
-            MatrixXd t = _parameterization_matrix(parameterization[j], curve_degrees[j]);
+            MatrixXd t = parameterization_matrix(parameterization[j], curve_degrees[j]);
             t_matrices.push_back(t);
             t_product_matrices.push_back(t.transpose() * t);
 

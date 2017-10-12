@@ -63,15 +63,19 @@ namespace bezier {
         if(t < 0 or t > 1){
             throw std::domain_error("Composite Bezier curve only defined on [0,1].");
         }
+        std::pair<int, double> local_param = global_to_local_param(t, _bezier_curves.size());
+        return _bezier_curves[local_param.first](local_param.second);
+    }
 
-        unsigned long curve_index;
+    std::pair<int, double> global_to_local_param(double t, int number_of_curves){
+        int curve_index;
         if (t == 1){
-            curve_index = _bezier_curves.size() - 1;
+            curve_index = number_of_curves - 1;
         }
         else{
-            curve_index = static_cast<unsigned long>(std::floor(_bezier_curves.size() * t));
+            curve_index = static_cast<int>(std::floor(number_of_curves * t));
         }
-        double curve_fraction = curve_index / (double) _bezier_curves.size();
-        return _bezier_curves[curve_index]((t - curve_fraction) * _bezier_curves.size());
+        double curve_fraction = curve_index / (double) number_of_curves;
+        return std::make_pair(curve_index, (t - curve_fraction) * number_of_curves);
     }
 }
