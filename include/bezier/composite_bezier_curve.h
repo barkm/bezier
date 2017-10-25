@@ -16,8 +16,11 @@ namespace bezier {
         explicit CompositeBezierCurve(const vector<vector<VectorXd>>& control_points);
         explicit CompositeBezierCurve(const vector<BezierCurve> & bezier_curves);
         CompositeBezierCurve(const std::initializer_list<BezierCurve> &bezier_curves);
-        VectorXd operator()(double t) const;
-        virtual unsigned int dimension() const;
+
+        VectorXd operator()(double t) const override;
+        unsigned int dimension() const override;
+        std::array<Eigen::VectorXd, 2> bounds() const override;
+
         vector<BezierCurve> bezier_curves() const;
     private:
         unsigned int _dimension;

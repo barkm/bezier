@@ -67,6 +67,17 @@ namespace bezier {
         return _bezier_curves[local_param.first](local_param.second);
     }
 
+    std::array<VectorXd, 2> CompositeBezierCurve::bounds() const {
+        std::array<VectorXd, 2> min_max = _bezier_curves[0].bounds();
+        for (int i = 1; i < _bezier_curves.size(); ++i) {
+            std::array<VectorXd, 2> tmp_bounds = _bezier_curves[i].bounds();
+            min_max[0] = min_max[0].cwiseMin(tmp_bounds[0]);
+            min_max[1] = min_max[1].cwiseMax(tmp_bounds[1]);
+        }
+        return min_max;
+    }
+
+
     std::pair<int, double> global_to_local_param(double t, int number_of_curves){
         int curve_index;
         if (t == 1){

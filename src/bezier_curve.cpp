@@ -62,6 +62,15 @@ namespace bezier {
         return tvec.transpose() * _coefficient_matrix * _control_matrix;
     }
 
+    std::array<Eigen::VectorXd, 2> BezierCurve::bounds() const {
+        VectorXd min_bound = _control_points[0];
+        VectorXd max_bound = _control_points[0];
+        for (int i = 1; i < _control_points.size(); ++i) {
+            min_bound = min_bound.cwiseMin(_control_points[i]);
+            max_bound = max_bound.cwiseMax(_control_points[i]);
+        }
+        return {min_bound, max_bound};
+    }
 
 
     MatrixXd bezier_coefficients(int degree){

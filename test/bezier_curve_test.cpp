@@ -92,5 +92,13 @@ TEST_CASE("Bezier curve evaluation", "[evaluation]"){
     }
 }
 
+TEST_CASE("Bezier curve bounds", "[bounds]"){
+    vector<VectorXd> control_points = { Vector2d(1, -1), Vector2d(1, 2), Vector2d(-2, 1), Vector2d(-2, -1) };
+    bezier::BezierCurve cubic2d(control_points);
+    std::array<VectorXd, 2> bounds = cubic2d.bounds();
+    REQUIRE(bounds[0] == Vector2d(-2, -1));
+    REQUIRE(bounds[1] == Vector2d(1, 2));
+}
+
 
 

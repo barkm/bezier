@@ -54,6 +54,17 @@ TEST_CASE("Bezier curve evaluation", "[evaluation]"){
     }
 }
 
+TEST_CASE("Composite Bezier curve bounds", "[bounds]") {
+    bezier::BezierCurve cubic1 = {Vector2d(1, -1), Vector2d(-1, 3), Vector2d(1, 2), Vector2d(2, 3)};
+    bezier::BezierCurve cubic2 = {Vector2d(2, 3), Vector2d(-1, 3), Vector2d(4, 10), Vector2d(-1, -1)};
+    bezier::BezierCurve cubic3 = {Vector2d(-1, -1), Vector2d(-1, -3), Vector2d(-2, -2), Vector2d(1, 0)};
+    bezier::CompositeBezierCurve composite = {cubic1, cubic2, cubic3};
+    std::array<Eigen::VectorXd, 2> bounds = composite.bounds();
+
+    REQUIRE(bounds[0] == Vector2d(-2, -3));
+    REQUIRE(bounds[1] == Vector2d(4, 10));
+}
+
 
 
 

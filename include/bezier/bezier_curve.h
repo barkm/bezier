@@ -24,15 +24,16 @@ namespace bezier {
         vector<VectorXd> control_points() const;
         MatrixXd coefficient_matrix() const;
 
-        virtual unsigned int degree() const;
-        virtual unsigned int dimension() const;
-        virtual VectorXd operator()(double t) const;
-        MatrixXd _control_matrix;
+        unsigned int degree() const;
+        unsigned int dimension() const override;
+        VectorXd operator()(double t) const override;
+        std::array<Eigen::VectorXd, 2> bounds() const override;
     private:
         unsigned int _degree;
         unsigned int _dimension;
         vector<VectorXd> _control_points;
         MatrixXd _coefficient_matrix;
+        MatrixXd _control_matrix;
     };
 }
 
