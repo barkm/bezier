@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 11)
 include_directories(include)
 include_directories(/usr/local/include/eigen3/)
 
+add_definitions(-DCMAKE_BINARY_DIR=${CMAKE_BINARY_DIR})
 
 set(SOURCE_FILES
         include/bezier/bezier_curve.h

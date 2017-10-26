@@ -15,18 +15,22 @@ namespace bezier {
 
     void write_postscript(const std::string & file_name,
                           const std::vector<Curve*> & curves,
-                          const Vector2d & ps_dims);
+                          bool show_control_points);
 
     void write_postscript(const std::string & file_name,
                           const std::vector<Curve*> & curves,
-                          const std::array<Vector2d, 2> & limits,
-                          const Vector2d & ps_dims);
+                          bool show_control_points,
+                          const std::array<Vector2d, 2> & limits);
+
+    void _write_control_points(std::ofstream & file, const Vector2d & scale_factor, const vector<VectorXd> & points);
+
+    void _write_bezier_curve(std::ofstream & file, bool show_control_points, const Vector2d & scale_factor, const BezierCurve & bezier);
 
     void _write_line(std::ofstream & file, const Vector2d & scale_factor, const BezierCurve & line);
 
     void _write_cubic(std::ofstream & file, const Vector2d & scale_factor, const BezierCurve & cubic);
 
-    void _write_with_samples(std::ofstream & file, const Vector2d & scale_factor, Curve * curve, int n_samples);
+    void _write_with_samples(std::ofstream & file, const Vector2d & scale_factor, const Curve * curve, int n_samples);
 }
 
 #endif //BEZIER_POSTSCRIPT_H

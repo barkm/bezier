@@ -2,7 +2,7 @@
 
 namespace bezier {
 
-    std::vector<Eigen::VectorXd> sample(Curve * curve, int n){
+    std::vector<Eigen::VectorXd> sample(const Curve * curve, int n){
 
         Eigen::VectorXd params = Eigen::VectorXd::LinSpaced(n, 0, 1);
         std::vector<Eigen::VectorXd> samples;

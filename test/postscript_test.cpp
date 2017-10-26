@@ -5,6 +5,10 @@
 
 #include <bezier/bezier_curve.h>
 
+#define STR_EXPAND(tok) #tok
+#define STR(tok) STR_EXPAND(tok)
+#define BINARY_DIR STR(CMAKE_BINARY_DIR)
+
 using Eigen::Vector2d;
 
 TEST_CASE("Postscript test", "[postscript]"){
@@ -12,5 +16,5 @@ TEST_CASE("Postscript test", "[postscript]"){
     bezier::BezierCurve curve2({ Vector2d(1, -1), Vector2d(1, 2)});
     bezier::BezierCurve curve3({ Vector2d(150, -20), Vector2d(50, 20), Vector2d(40, 30), Vector2d(0, -10),
                                Vector2d(-20, 30)});
-    REQUIRE_NOTHROW(bezier::write_postscript("test.ps", {&curve1, &curve2, &curve3}, Vector2d(100, 100)));
+    REQUIRE_NOTHROW(bezier::write_postscript(BINARY_DIR "/test.ps", {&curve1, &curve2, &curve3}, true));
 }

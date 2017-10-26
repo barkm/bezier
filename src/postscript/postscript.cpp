@@ -12,12 +12,15 @@ using std::array;
 using Eigen::Vector2d;
 
 namespace bezier {
-    static const int n_samples = 100;
-    static const int line_width = 1;
+    static const int n_samples = 50;
+    static const int line_width = 3;
+    static const int circle_radius = 4;
+    static const int control_point_line_width = 1;
+    static const Vector2d postscript_dims(300, 300);
 
     void write_postscript(const std::string & file_name,
                           const std::vector<Curve*> & curves,
-                          const Vector2d & ps_dims){
+                          bool show_control_points){
         Vector2d min, max;
         for(Curve * curve : curves){
             std::array<Eigen::VectorXd, 2> bounds = curve->bounds();
@@ -25,11 +28,13 @@ namespace bezier {
             max = bounds[1].cwiseMax(max);
         }
 
-        write_postscript(file_name, curves, {min, max}, ps_dims);
+        write_postscript(file_name, curves, show_control_points, {min, max});
     }
 
-    void write_postscript(const std::string & file_name, const vector<Curve*> & curves,
-                          const std::array<Vector2d, 2> & limits, const Vector2d & ps_dims){
+    void write_postscript(const std::string & file_name,
+                          const vector<Curve*> & curves,
+                          bool show_control_points,
+                          const std::array<Vector2d, 2> & limits){
 
         // assert that all curves are in 2D
         for(Curve * curve : curves){
@@ -49,7 +54,7 @@ namespace bezier {
             throw std::invalid_argument("Could not open file" + file_name);
         }
         
-        Vector2d scale_factor = (ps_dims).cwiseQuotient(max - min);
+        Vector2d scale_factor = (postscript_dims).cwiseQuotient(max - min);
         min = min.cwiseProduct(scale_factor);
         max = max.cwiseProduct(scale_factor);
 
@@ -61,20 +66,56 @@ namespace bezier {
         for(Curve * c : curves){
             auto bezier = dynamic_cast<BezierCurve*>(c);
             if(bezier != nullptr){
-                if(bezier->degree() == 1){
-                    _write_line(file, scale_factor, *bezier);
-                    continue;
-                }
-                if(bezier->degree() == 3){
-                    _write_cubic(file, scale_factor, *bezier);
-                    continue;
-                }
+                _write_bezier_curve(file, show_control_points, scale_factor, *bezier);
+                continue;
             }
-            _write_with_samples(file, scale_factor, c, n_samples);
+            auto composite_bezier = dynamic_cast<CompositeBezierCurve*>(c);
+            if(composite_bezier != nullptr){
+                for(const BezierCurve & b : composite_bezier->bezier_curves()){
+                    _write_bezier_curve(file, show_control_points, scale_factor, b);
+                }
+                continue;
+            }
+            throw std::runtime_error("Curve is not BezierCurve nor CompositeBezierCurve!");
         }
     }
 
-    void _write_with_samples(std::ofstream & file, const Vector2d & scale_factor, Curve * curve, int n_samples){
+    void _write_bezier_curve(std::ofstream & file, bool show_control_points, const Vector2d & scale_factor, const BezierCurve & bezier){
+        if(bezier.degree() == 1){
+            _write_line(file, scale_factor, bezier);
+        }
+        else if(bezier.degree() == 3){
+            _write_cubic(file, scale_factor, bezier);
+        }
+        else
+        {
+            _write_with_samples(file, scale_factor, &bezier, n_samples);
+        }
+
+        if(show_control_points){
+            _write_control_points(file, scale_factor, bezier.control_points());
+        }
+    }
+
+    void _write_control_points(std::ofstream & file, const Vector2d & scale_factor, const vector<VectorXd> & points){
+        file << "newpath\n";
+        Vector2d prev_point;
+        for(int i = 0; i < points.size(); i++){
+            Vector2d sp = points[i].cwiseProduct(scale_factor);
+            file << sp(0) << " " << sp(1) << " " << circle_radius << " 0 360 arc fill\n";
+            if (i != 0){
+                file << "newpath\n";
+                file << prev_point(0) << " " <<
+                     prev_point(1) << " moveto " << sp(0) << " " << sp(1) << " lineto\n";
+                file << control_point_line_width << " setlinewidth [3 3] 0 setdash\n";
+                file << "stroke\n";
+                file << "[] 0 setdash\n";
+            }
+            prev_point = sp;
+        }
+    }
+
+    void _write_with_samples(std::ofstream & file, const Vector2d & scale_factor, const Curve * curve, int n_samples){
         std::vector<VectorXd> points = sample(curve, n_samples);
         Vector2d p = points[0].cwiseProduct(scale_factor);
         file << "newpath\n" << p(0) << " " << p(1) << " moveto\n";
