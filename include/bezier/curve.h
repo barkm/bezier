@@ -3,6 +3,7 @@
 
 #include <Eigen/Dense>
 #include <array>
+#include <vector>
 
 namespace bezier {
 
@@ -13,6 +14,7 @@ namespace bezier {
         virtual std::array<Eigen::VectorXd, 2> bounds() const = 0;
     };
 
+    std::vector<Eigen::VectorXd> sample(Curve * curve, int n);
 }
 
 #endif //BEZIER_CURVE_H

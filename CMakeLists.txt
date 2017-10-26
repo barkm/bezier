@@ -12,6 +12,7 @@ set(SOURCE_FILES
         src/math/misc.cpp
         include/bezier/math/misc.h
         include/bezier/curve.h
+        src/curve.cpp
         src/bezier_curve.cpp
         include/bezier/composite_bezier_curve.h
         src/composite_bezier_curve.cpp
@@ -20,9 +21,8 @@ set(SOURCE_FILES
         src/fit_composite_bezier_curve.cpp
         include/bezier/fit_composite_bezier_curve.h
         include/bezier/utilities.h
-        #include/bezier/postscript/postscript.h
-        #src/postscript/postscript.cpp
-        )
+        include/bezier/postscript/postscript.h
+        src/postscript/postscript.cpp)
 
 
 add_library(bezier STATIC ${SOURCE_FILES})
@@ -43,6 +43,12 @@ target_link_libraries(math_test bezier)
 
 add_executable(utilities_test test/utilities_test.cpp)
 target_link_libraries(utilities_test bezier)
+
+add_executable(postscript_test test/postscript_test.cpp)
+target_link_libraries(postscript_test bezier)
+
+add_executable(curve_test test/curve_test.cpp)
+target_link_libraries(curve_test bezier)
 
 add_executable(main main.cpp)
 target_link_libraries(main bezier)
