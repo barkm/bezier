@@ -54,6 +54,14 @@ namespace bezier {
     }
 
 
+    CompositeBezierCurve fit_composite_bezier_curve(const vector<VectorXd> & data_points,
+                                                    const vector<int> & joints,
+                                                    int curve_degrees,
+                                                    bool closed_curve){
+        vector<int> curve_degrees_vec(joints.size()+1, curve_degrees);
+        return fit_composite_bezier_curve(data_points, joints, curve_degrees_vec, closed_curve);
+    }
+
 
     CompositeBezierCurve fit_composite_bezier_curve(const vector<VectorXd> & data_points,
                                                     const vector<int> & joints,
