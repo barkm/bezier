@@ -22,6 +22,8 @@ set(SOURCE_FILES
         src/fit_composite_bezier_curve.cpp
         include/bezier/fit_composite_bezier_curve.h
         include/bezier/utilities.h
+        include/bezier/postscript/bezier_postscript.h
+        src/postscript/bezier_postscript.cpp
         include/bezier/postscript/postscript.h
         src/postscript/postscript.cpp)
 
