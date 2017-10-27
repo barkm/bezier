@@ -6,11 +6,22 @@
 namespace bezier {
     using std::vector;
 
+    /**
+     * Partitions data points at joints. Each partition includes the joint.
+     * @tparam T
+     * @param data_points
+     * @param joints
+     * @return
+     */
     template <typename T>
     vector<vector<T>> partition_data(const vector<T> & data_points,
                                 const vector<int> & joints){
         vector<vector<T>> partitioned_data_points;
         vector<T> subset;
+        if(joints.empty()){
+            return {data_points};
+        }
+
         for (int i = 0; i < joints.size(); ++i) {
             subset.clear();
             if(i == 0){

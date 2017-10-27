@@ -47,11 +47,11 @@ target_link_libraries(math_test bezier)
 add_executable(utilities_test test/utilities_test.cpp)
 target_link_libraries(utilities_test bezier)
 
-add_executable(postscript_test test/postscript_test.cpp)
-target_link_libraries(postscript_test bezier)
-
 add_executable(curve_test test/curve_test.cpp)
 target_link_libraries(curve_test bezier)
+
+add_executable(postscript_test test/postscript_test.cpp)
+target_link_libraries(postscript_test bezier)
 
 add_executable(main main.cpp)
 target_link_libraries(main bezier)

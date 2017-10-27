@@ -42,23 +42,12 @@ TEST_CASE("Fit with parameterization tests", "[with parameterization]"){
 
     SECTION("invalid arguments"){
         SECTION("too low degree curve"){
-            vector<vector<VectorXd>> data_points = {{Vector2d(2, 1), Vector2d(-1, 3), Vector2d(10, 2), Vector2d(5, 3)}};
-            vector<vector<double>> parameterization = {{0, 0.25, 0.75, 1}};
-            vector<int> curve_degrees = {1};
-            bool closed_curve = false;
-
-            REQUIRE_THROWS_AS(bezier::fit_composite_bezier_curve(data_points,
-                                                                 parameterization,
-                                                                 curve_degrees,
-                                                                 closed_curve),
-                              std::invalid_argument);
-
-            data_points = {{Vector3d(2, 1, 0), Vector3d(-1, 3, 2), Vector3d(10, 2, -1), Vector3d(5, 3, 2)},
+            vector<vector<VectorXd>> data_points = {{Vector3d(2, 1, 0), Vector3d(-1, 3, 2), Vector3d(10, 2, -1), Vector3d(5, 3, 2)},
                            {Vector3d(5, 3, 2), Vector3d(1, 0, 0)},
                            {Vector3d(1, 0, 0), Vector3d(5, 4, 3)}};
-            parameterization = {{0, 0.25, 0.75, 1}, {0.25, 1}, {0.25, 0.75, 1}};
-            curve_degrees = {3, 3, 2};
-            closed_curve = false;
+            vector<vector<double>> parameterization = {{0, 0.25, 0.75, 1}, {0.25, 1}, {0.25, 0.75, 1}};
+            vector<int> curve_degrees = {3, 3, 2};
+            bool closed_curve = false;
 
             REQUIRE_THROWS_AS(bezier::fit_composite_bezier_curve(data_points,
                                                                  parameterization,
@@ -157,8 +146,19 @@ TEST_CASE("Fit with parameterization tests", "[with parameterization]"){
             SECTION("open curve"){
                 vector<vector<VectorXd>> data_points = {{Vector2d(2, 1), Vector2d(-1, 3), Vector2d(10, 2), Vector2d(5, 3)}};
                 vector<vector<double>> parameterization = {{0, 0.25, 0.75, 1}};
-                vector<int> curve_degrees = {3};
+                vector<int> curve_degrees = {1};
                 bool closed_curve = false;
+
+                REQUIRE_NOTHROW(bezier::fit_composite_bezier_curve(data_points,
+                                                                   parameterization,
+                                                                   curve_degrees,
+                                                                   closed_curve));
+
+
+                data_points = {{Vector2d(2, 1), Vector2d(-1, 3), Vector2d(10, 2), Vector2d(5, 3)}};
+                parameterization = {{0, 0.25, 0.75, 1}};
+                curve_degrees = {3};
+                closed_curve = false;
 
                 bezier::CompositeBezierCurve curve = bezier::fit_composite_bezier_curve(data_points,
                                                                                         parameterization,

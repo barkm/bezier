@@ -123,7 +123,7 @@ namespace bezier {
                 if(data_points[i].size() < curve_degrees[i] + 1){
                     throw std::invalid_argument("Not enough data points to fit curve.");
                 }
-                if(curve_degrees[i] < 2){
+                if(curve_degrees[i] < 2 and data_points.size() != 1){
                     throw std::invalid_argument("First bezier curve must be of degree at least 2.");
                 }
             }
@@ -131,7 +131,7 @@ namespace bezier {
                 if(data_points[i].size() < curve_degrees[i] - 1){
                     throw std::invalid_argument("Not enough data points to fit curve.");
                 }
-                if(curve_degrees[i] < 3){
+                if(curve_degrees[i] < 3 and data_points.size() != 1){
                     throw std::invalid_argument("The Bezier curves must be of degree at least 3.");
                 }
             }

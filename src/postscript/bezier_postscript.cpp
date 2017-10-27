@@ -19,23 +19,9 @@ namespace bezier {
     static const int control_point_line_width = 1;
     static const Vector2d postscript_dims(300, 300);
 
-    void write_postscript(const std::string & file_name,
-                          const std::vector<Curve*> & curves,
-                          bool show_control_points){
-        Vector2d min, max;
-        for(Curve * curve : curves){
-            std::array<Eigen::VectorXd, 2> bounds = curve->bounds();
-            min = bounds[0].cwiseMin(min);
-            max = bounds[1].cwiseMax(max);
-        }
-
-        write_postscript(file_name, curves, show_control_points, {min, max});
-    }
-
-    void write_postscript(const std::string & file_name,
+    void write_postscript(PostScriptWriter & ps_writer,
                           const vector<Curve*> & curves,
-                          bool show_control_points,
-                          const std::array<Vector2d, 2> & limits){
+                          bool show_control_points){
 
         // assert that all curves are in 2D
         for(Curve * curve : curves){
@@ -44,35 +30,17 @@ namespace bezier {
             }
         }
 
-        Vector2d min, max;
-        min = limits[0];
-        max = limits[1];
-
-        std::ofstream file;
-        file.open(file_name);
-
-        if(!file.is_open()){
-            throw std::invalid_argument("Could not open file" + file_name);
-        }
-        
-        Vector2d scale_factor = (postscript_dims).cwiseQuotient(max - min);
-        min = min.cwiseProduct(scale_factor);
-        max = max.cwiseProduct(scale_factor);
-
-        // write post script header
-        file << ps_header({min, max});
-
         // write all curves
         for(Curve * c : curves){
             auto bezier = dynamic_cast<BezierCurve*>(c);
             if(bezier != nullptr){
-                _write_bezier_curve(file, show_control_points, scale_factor, *bezier);
+                _write_bezier_curve(ps_writer, show_control_points, *bezier);
                 continue;
             }
             auto composite_bezier = dynamic_cast<CompositeBezierCurve*>(c);
             if(composite_bezier != nullptr){
                 for(const BezierCurve & b : composite_bezier->bezier_curves()){
-                    _write_bezier_curve(file, show_control_points, scale_factor, b);
+                    _write_bezier_curve(ps_writer, show_control_points, b);
                 }
                 continue;
             }
@@ -80,64 +48,57 @@ namespace bezier {
         }
     }
 
-    void _write_bezier_curve(std::ofstream & file, bool show_control_points, const Vector2d & scale_factor, const BezierCurve & bezier){
+    void _write_bezier_curve(PostScriptWriter & ps_writer, bool show_control_points, const BezierCurve & bezier){
         if(bezier.degree() == 1){
-            _write_line(file, scale_factor, bezier);
+            _write_line(ps_writer, bezier);
         }
         else if(bezier.degree() == 3){
-            _write_cubic(file, scale_factor, bezier);
+            _write_cubic(ps_writer, bezier);
         }
-        else
-        {
-            _write_with_samples(file, scale_factor, &bezier, n_samples);
+        else {
+            _write_with_samples(ps_writer, &bezier, n_samples);
         }
 
         if(show_control_points){
-            _write_control_points(file, scale_factor, bezier.control_points());
+            _write_control_points(ps_writer, bezier.control_points());
         }
     }
 
-    void _write_control_points(std::ofstream & file, const Vector2d & scale_factor, const vector<VectorXd> & points){
-        vector<Vector2d> scaled_points;
-        for(const auto & point : points){
-            scaled_points.emplace_back(point.cwiseProduct(scale_factor));
-            file << ps_circle(*(scaled_points.end()-1), circle_radius, true);
-        }
-        file << ps_polyline(scaled_points, control_point_line_width, true);
+    void _write_control_points(PostScriptWriter & ps_writer, const vector<VectorXd> & points){
+        vector<Vector2d> p(points.size());
+        std::copy(points.begin(), points.end(), p.begin());
+        ps_writer.filled(true);
+        ps_writer.circles(p, circle_radius);
+        ps_writer.filled(false);
+        ps_writer.dashed(true);
+        ps_writer.polyline(p);
+        ps_writer.dashed(false);
     }
 
-    void _write_with_samples(std::ofstream & file, const Vector2d & scale_factor, const Curve * curve, int n_samples){
+    void _write_with_samples(PostScriptWriter & ps_writer, const Curve * curve, int n_samples){
         std::vector<VectorXd> points = sample(curve, n_samples);
-        std::vector<Vector2d> scaled_points;
-        for(const auto & point : points){
-            scaled_points.emplace_back(point.cwiseProduct(scale_factor));
-        }
-        file << ps_polyline(scaled_points, line_width);
+        vector<Vector2d> p(points.size());
+        std::copy(points.begin(), points.end(), p.begin());
+        ps_writer.polyline(p);
     }
 
-    void _write_line(std::ofstream & file, const Vector2d & scale_factor, const BezierCurve & line){
+    void _write_line(PostScriptWriter & ps_writer, const BezierCurve & line){
         if(line.degree() != 1){
             throw std::invalid_argument("Not a line!");
         }
-        std::vector<VectorXd> control_points = line.control_points();
-
-        Vector2d start = control_points[0].cwiseProduct(scale_factor);
-        Vector2d stop = control_points[1].cwiseProduct(scale_factor);
-
-        file << ps_line(start, stop, line_width);
+        ps_writer.line(line.control_points()[0], line.control_points()[1]);
     }
 
-    void _write_cubic(std::ofstream & file, const Vector2d & scale_factor, const BezierCurve & cubic){
+    void _write_cubic(PostScriptWriter & ps_writer, const BezierCurve & cubic){
         if(cubic.degree() != 3){
             throw std::invalid_argument("Not a cubic Bezier !");
         }
-        std::vector<VectorXd> control_points = cubic.control_points();
+        array<Vector2d, 4> p;
+        p[0] = cubic.control_points()[0];
+        p[1] = cubic.control_points()[1];
+        p[2] = cubic.control_points()[2];
+        p[3] = cubic.control_points()[3];
 
-        Vector2d c1 = control_points[0].cwiseProduct(scale_factor);
-        Vector2d c2 = control_points[1].cwiseProduct(scale_factor);
-        Vector2d c3 = control_points[2].cwiseProduct(scale_factor);
-        Vector2d c4 = control_points[3].cwiseProduct(scale_factor);
-
-        file << ps_cubic({c1, c2, c3, c4}, line_width);
+        ps_writer.cubic(p);
     }
 }
