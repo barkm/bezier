@@ -40,7 +40,7 @@ namespace bezier {
     vector<double> chordlength_parameterization(const vector<VectorXd> &data_points,
                                                 const VectorXd &start_point = VectorXd(0));
 
-    vector<vector<double>> initialize_parameterization(const vector<vector<VectorXd>> & data_points);
+    vector<vector<double>> initialize_parameterization(const vector<vector<VectorXd>> & data_points, bool closed_curve);
 
     MatrixXd parameterization_matrix(const vector<double> &parameterization, int degree);
 }

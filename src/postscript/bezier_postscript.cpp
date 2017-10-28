@@ -20,31 +20,25 @@ namespace bezier {
     static const Vector2d postscript_dims(300, 300);
 
     void write_postscript(PostScriptWriter & ps_writer,
-                          const vector<Curve*> & curves,
+                          const Curve*  curve,
                           bool show_control_points){
 
-        // assert that all curves are in 2D
-        for(Curve * curve : curves){
-            if(curve->dimension() != 2){
-                throw std::invalid_argument("Curves must be in 2D when writing to PostScript!");
-            }
+        // assert the curves are in 2D
+        if(curve->dimension() != 2){
+            throw std::invalid_argument("Curves must be in 2D when writing to PostScript!");
         }
 
-        // write all curves
-        for(Curve * c : curves){
-            auto bezier = dynamic_cast<BezierCurve*>(c);
-            if(bezier != nullptr){
-                _write_bezier_curve(ps_writer, show_control_points, *bezier);
-                continue;
+        // write curve
+        auto bezier = dynamic_cast<const BezierCurve*>(curve);
+        if(bezier != nullptr){
+            _write_bezier_curve(ps_writer, show_control_points, *bezier);
+        }
+
+        auto composite_bezier = dynamic_cast<const CompositeBezierCurve*>(curve);
+        if(composite_bezier != nullptr){
+            for(const BezierCurve & b : composite_bezier->bezier_curves()){
+                _write_bezier_curve(ps_writer, show_control_points, b);
             }
-            auto composite_bezier = dynamic_cast<CompositeBezierCurve*>(c);
-            if(composite_bezier != nullptr){
-                for(const BezierCurve & b : composite_bezier->bezier_curves()){
-                    _write_bezier_curve(ps_writer, show_control_points, b);
-                }
-                continue;
-            }
-            throw std::runtime_error("Curve is not BezierCurve nor CompositeBezierCurve!");
         }
     }
 

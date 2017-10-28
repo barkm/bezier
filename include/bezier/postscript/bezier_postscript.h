@@ -16,7 +16,7 @@ namespace bezier {
     using Eigen::Vector2d;
 
     void write_postscript(PostScriptWriter & ps_writer,
-                          const std::vector<Curve*> & curves,
+                          const Curve * curves,
                           bool show_control_points);
 
     void _write_control_points(PostScriptWriter & ps_writer, const vector<VectorXd> & points);

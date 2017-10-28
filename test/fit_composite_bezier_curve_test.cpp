@@ -25,7 +25,7 @@ TEST_CASE("Chordlength parameterization tests", "[chordlengthparam]"){
 TEST_CASE("Initializing parameterization test", "[initparam]"){
     vector<vector<VectorXd>> data_points = {{Vector2d(0, 0), Vector2d(0, 2.5), Vector2d(0, 5)},
                                     {Vector2d(0, 6), Vector2d(0, 10), Vector2d(0, 15), Vector2d(0, 25)}};
-    vector<vector<double>> parameterization = bezier::initialize_parameterization(data_points);
+    vector<vector<double>> parameterization = bezier::initialize_parameterization(data_points, false);
 
     REQUIRE(parameterization[0][0] == 0);
     REQUIRE(parameterization[0][1] == 0.5);

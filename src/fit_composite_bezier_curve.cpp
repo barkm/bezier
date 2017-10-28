@@ -39,10 +39,14 @@ namespace bezier {
         return parameterization;
     }
 
-    vector<vector<double>> initialize_parameterization(const vector<vector<VectorXd>> & data_points){
+    vector<vector<double>> initialize_parameterization(const vector<vector<VectorXd>> & data_points, bool closed_curve){
         vector<vector<double>> parameterization;
         for(int i = 0; i < data_points.size(); i++){
-            if(i != 0){
+            if(i == 0 and closed_curve){
+                parameterization.push_back(chordlength_parameterization(data_points[i],
+                                                                        *(data_points[data_points.size() - 1].end() - 1)));
+            }
+            else if(i != 0){
                 parameterization.push_back(chordlength_parameterization(data_points[i],
                                                                         *(data_points[i - 1].end() - 1)));
             }
@@ -76,7 +80,7 @@ namespace bezier {
                                                     const vector<int> & curve_degrees,
                                                     bool closed_curve){
         return fit_composite_bezier_curve(data_points,
-                                          initialize_parameterization(data_points),
+                                          initialize_parameterization(data_points, closed_curve),
                                           curve_degrees,
                                           closed_curve);
     }
@@ -108,6 +112,10 @@ namespace bezier {
                                                    const vector<int> & curve_degrees,
                                                    bool closed_curve) {
 
+        if(parameterization.size() != data_points.size()){
+           throw std::invalid_argument("Number of parameterizations does not match number of curves");
+        }
+
         // keeps track if the previous curve has data point assigned parameterization = 1
         bool prev_curve_has_end_point = false;
         if(closed_curve){
@@ -131,7 +139,7 @@ namespace bezier {
                 if(data_points[i].size() < curve_degrees[i] - 1){
                     throw std::invalid_argument("Not enough data points to fit curve.");
                 }
-                if(curve_degrees[i] < 3 and data_points.size() != 1){
+                if(curve_degrees[i] < 3){
                     throw std::invalid_argument("The Bezier curves must be of degree at least 3.");
                 }
             }
@@ -215,10 +223,10 @@ namespace bezier {
                 }
                 continuity_matrix.block(0, continuity_matrix.cols()-2, 2, 2) = q;
 
-                continuity_matrices.push_back(continuity_matrix);
-
                 q_matrices.push_back(coefficient_matrix.block(0, 0, coefficient_matrix.rows(), 2) * continuity_matrix);
                 r_matrices.push_back(coefficient_matrix.block(0, 2, coefficient_matrix.rows(), coefficient_matrix.cols() - 2));
+
+                continuity_matrices.push_back(continuity_matrix);
             }
         }
 
