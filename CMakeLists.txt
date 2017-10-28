@@ -32,26 +32,37 @@ add_library(bezier STATIC ${SOURCE_FILES})
 
 include_directories(test/third-party)
 
-add_executable(bezier_curve_test test/bezier_curve_test.cpp)
-target_link_libraries(bezier_curve_test bezier)
+#add_executable(bezier_curve_test test/bezier_curve_test.cpp)
+#target_link_libraries(bezier_curve_test bezier)
+#
+#add_executable(composite_bezier_curve_test test/composite_bezier_curve_test.cpp)
+#target_link_libraries(composite_bezier_curve_test bezier)
+#
+#add_executable(fit_composite_bezier_curve_test test/fit_composite_bezier_curve_test.cpp)
+#target_link_libraries(fit_composite_bezier_curve_test bezier)
+#
+#add_executable(math_test test/math_test.cpp)
+#target_link_libraries(math_test bezier)
+#
+#add_executable(utilities_test test/utilities_test.cpp)
+#target_link_libraries(utilities_test bezier)
+#
+#add_executable(curve_test test/curve_test.cpp)
+#target_link_libraries(curve_test bezier)
+#
+#add_executable(postscript_test test/postscript_test.cpp)
+#target_link_libraries(postscript_test bezier)
 
-add_executable(composite_bezier_curve_test test/composite_bezier_curve_test.cpp)
-target_link_libraries(composite_bezier_curve_test bezier)
-
-add_executable(fit_composite_bezier_curve_test test/fit_composite_bezier_curve_test.cpp)
-target_link_libraries(fit_composite_bezier_curve_test bezier)
-
-add_executable(math_test test/math_test.cpp)
-target_link_libraries(math_test bezier)
-
-add_executable(utilities_test test/utilities_test.cpp)
-target_link_libraries(utilities_test bezier)
-
-add_executable(curve_test test/curve_test.cpp)
-target_link_libraries(curve_test bezier)
-
-add_executable(postscript_test test/postscript_test.cpp)
-target_link_libraries(postscript_test bezier)
+add_executable(tests
+        test/main_test.cpp
+        test/bezier_curve_test.cpp
+        test/composite_bezier_curve_test.cpp
+        test/fit_composite_bezier_curve_test.cpp
+        test/math_test.cpp
+        test/utilities_test.cpp
+        test/curve_test.cpp
+        test/postscript_test.cpp)
+target_link_libraries(tests bezier)
 
 add_executable(main main.cpp)
 target_link_libraries(main bezier)

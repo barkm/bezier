@@ -22,16 +22,38 @@ namespace bezier {
                                                     const vector<vector<double>> & parameterization,
                                                     const vector<int> & curve_degrees,
                                                     bool closed_curve);
-
+    /**
+     * Least square fit composite Bezier curve
+     * @param data_points : data points associated with each curve
+     * @param curve_degrees : degree of each curve
+     * @param closed_curve : if the fitted curve should be closed
+     * @return compsite bezier curve
+     */
     CompositeBezierCurve fit_composite_bezier_curve(const vector<vector<VectorXd>> & data_points,
                                                     const vector<int> & curve_degrees,
                                                     bool closed_curve);
 
+    /**
+     * Least square fit composite Bezier curve
+     * @param data_points : data points
+     * @param joints : indices where to split the data points between curves
+     * @param curve_degrees : degree of each curve
+     * @param closed_curve : if the fitted curve should be closed
+     * @return composite bezier curve
+     */
     CompositeBezierCurve fit_composite_bezier_curve(const vector<VectorXd> & data_points,
                                                     const vector<int> & joints,
                                                     const vector<int> & curve_degrees,
                                                     bool closed_curve);
 
+    /**
+     * Least square fit composite Bezier curve
+     * @param data_points : data points
+     * @param joints : indices where to split the data points between curves
+     * @param curve_degrees : degree of each curve
+     * @param closed_curve : if the fitted curve should be closed
+     * @return composite bezier curve
+     */
     CompositeBezierCurve fit_composite_bezier_curve(const vector<VectorXd> & data_points,
                                                     const vector<int> & joints,
                                                     int curve_degrees,

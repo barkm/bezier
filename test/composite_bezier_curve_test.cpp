@@ -1,4 +1,3 @@
-#define CATCH_CONFIG_MAIN
 #include <catch/catch.hpp>
 
 
@@ -6,7 +5,7 @@
 
 using Eigen::Vector2d;
 
-TEST_CASE("Bezier curve construction", "[construction]"){
+TEST_CASE("Composite Bezier curve construction", "[construction]"){
 
     bezier::BezierCurve cubic1 = { Vector2d(1, -1), Vector2d(-1, 3), Vector2d(1, 2), Vector2d(2, 3) };
     bezier::BezierCurve cubic2 = { Vector2d(2, 3), Vector2d(-1, 3), Vector2d(4, 10), Vector2d(-1, -1) };
@@ -24,7 +23,7 @@ TEST_CASE("Bezier curve construction", "[construction]"){
 }
 
 
-TEST_CASE("Bezier curve evaluation", "[evaluation]"){
+TEST_CASE("Composite Bezier curve evaluation", "[evaluation]"){
     bezier::BezierCurve cubic1 = { Vector2d(1, -1), Vector2d(-1, 3), Vector2d(1, 2), Vector2d(2, 3) };
     bezier::BezierCurve cubic2 = { Vector2d(2, 3), Vector2d(-1, 3), Vector2d(4, 10), Vector2d(-1, -1) };
     bezier::BezierCurve cubic3 = { Vector2d(-1, -1), Vector2d(-1, -3), Vector2d(-2, -2), Vector2d(1, 0) };
