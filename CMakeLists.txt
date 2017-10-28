@@ -3,11 +3,21 @@ project(bezier)
 
 set(CMAKE_CXX_STANDARD 11)
 
+# Directories for library and executables
+set(LIB_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(BIN_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${LIB_DIRECTORY})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${BIN_DIRECTORY})
+
+# Include directories
 include_directories(include)
+include_directories(test/third-party)
+
+# Dependencies
 include_directories(/usr/local/include/eigen3/)
 
-add_definitions(-DCMAKE_BINARY_DIR=${CMAKE_BINARY_DIR})
-
+# Bezier library
 set(SOURCE_FILES
         include/bezier/bezier_curve.h
         src/math/misc.cpp
@@ -27,11 +37,9 @@ set(SOURCE_FILES
         include/bezier/postscript/postscript.h
         src/postscript/postscript.cpp include/bezier/bezier.h)
 
-
 add_library(bezier STATIC ${SOURCE_FILES})
 
-include_directories(test/third-party)
-
+# Test target
 add_executable(tests
         test/main_test.cpp
         test/bezier_curve_test.cpp
@@ -43,11 +51,25 @@ add_executable(tests
         test/postscript_test.cpp)
 target_link_libraries(tests bezier)
 
+# Run the tests after compilation
+add_custom_command(TARGET tests POST_BUILD COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/tests)
+
+# Examples
 add_executable(circles examples/circles.cpp)
 target_link_libraries(circles bezier)
 
 add_executable(wave examples/wave.cpp)
 target_link_libraries(wave bezier)
 
-add_executable(main main.cpp)
-target_link_libraries(main bezier)
+# Install target
+install(DIRECTORY include/bezier DESTINATION include)
+install(FILES ${LIB_DIRECTORY}/libbezier.a DESTINATION lib)
+
+# Uninstall target
+configure_file(
+        "${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+        IMMEDIATE @ONLY)
+
+add_custom_target(uninstall
+        COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
