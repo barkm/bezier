@@ -46,5 +46,8 @@ target_link_libraries(tests bezier)
 add_executable(circles examples/circles.cpp)
 target_link_libraries(circles bezier)
 
+add_executable(wave examples/wave.cpp)
+target_link_libraries(wave bezier)
+
 add_executable(main main.cpp)
 target_link_libraries(main bezier)
