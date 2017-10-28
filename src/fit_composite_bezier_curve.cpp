@@ -19,6 +19,7 @@ namespace bezier {
         if(start_point.rows() != 0){
             total_length += (data_points[0]-start_point).norm();
         }
+
         for(int i = 1; i < data_points.size(); i++){
             total_length += (data_points[i] - data_points[i-1]).norm();
         }
@@ -42,16 +43,19 @@ namespace bezier {
     vector<vector<double>> initialize_parameterization(const vector<vector<VectorXd>> & data_points, bool closed_curve){
         vector<vector<double>> parameterization;
         for(int i = 0; i < data_points.size(); i++){
-            if(i == 0 and closed_curve){
-                parameterization.push_back(chordlength_parameterization(data_points[i],
-                                                                        *(data_points[data_points.size() - 1].end() - 1)));
-            }
-            else if(i != 0){
+            if(i != 0){
                 parameterization.push_back(chordlength_parameterization(data_points[i],
                                                                         *(data_points[i - 1].end() - 1)));
             }
             else{
-                parameterization.push_back(chordlength_parameterization(data_points[i]));
+                if(closed_curve){
+                    parameterization.push_back(
+                            chordlength_parameterization(data_points[i],
+                                                         *(data_points[data_points.size() - 1].end() - 1)));
+                }
+                else{
+                    parameterization.push_back(chordlength_parameterization(data_points[i]));
+                }
             }
         }
         return parameterization;

@@ -19,9 +19,9 @@ namespace bezier {
     static const int control_point_line_width = 1;
     static const Vector2d postscript_dims(300, 300);
 
-    void write_postscript(PostScriptWriter & ps_writer,
-                          const Curve*  curve,
-                          bool show_control_points){
+    void write_curve(PostScriptWriter &ps_writer,
+                     const Curve *curve,
+                     bool show_control_points){
 
         // assert the curves are in 2D
         if(curve->dimension() != 2){
