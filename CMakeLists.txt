@@ -61,6 +61,9 @@ target_link_libraries(circles bezier)
 add_executable(wave examples/wave.cpp)
 target_link_libraries(wave bezier)
 
+add_executable(interpolation examples/interpolation.cpp)
+target_link_libraries(interpolation bezier)
+
 # Install target
 install(DIRECTORY include/bezier DESTINATION include)
 install(FILES ${LIB_DIRECTORY}/libbezier.a DESTINATION lib)

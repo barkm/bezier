@@ -6,9 +6,13 @@ using Eigen::VectorXd;
 int main(){
 
     // Generate points on circle
-    Eigen::ArrayXd theta = Eigen::ArrayXd::LinSpaced(20, 0, (1 - 1.0/20.0) * 2 * M_PI);
+    Eigen::ArrayXd theta = Eigen::ArrayXd::LinSpaced(30, 0, (1 - 1.0/30.0) * 2 * M_PI);
     Eigen::ArrayXd sin = Eigen::sin(theta);
     Eigen::ArrayXd cos = Eigen::cos(theta);
+    Eigen::ArrayXd sin_noise = Eigen::ArrayXd::Random(theta.rows());
+    Eigen::ArrayXd cos_noise = Eigen::ArrayXd::Random(theta.rows());
+    sin += 0.1 * sin_noise;
+    cos += 0.1 * cos_noise;
 
     // Generate n_circles next to each other
     int n_circles = 4;
@@ -25,7 +29,7 @@ int main(){
     std::vector<bezier::CompositeBezierCurve> beziers;
     for(int i = 0; i <n_circles; ++i){
         bezier::CompositeBezierCurve bezier =
-                bezier::fit_composite_bezier_curve(circles[i], {9}, i + 3, true);
+                bezier::fit_composite_bezier_curve(circles[i], {14}, i + 3, true);
         beziers.push_back(bezier);
     }
 

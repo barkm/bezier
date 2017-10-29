@@ -41,6 +41,13 @@ namespace bezier {
     }
 
     vector<vector<double>> initialize_parameterization(const vector<vector<VectorXd>> & data_points, bool closed_curve){
+
+        for(const auto & data : data_points){
+            if(data.empty()){
+                throw std::invalid_argument("Cannot have empty data point partition!");
+            }
+        }
+
         vector<vector<double>> parameterization;
         for(int i = 0; i < data_points.size(); i++){
             if(i != 0){
