@@ -22,7 +22,7 @@ int main(){
                                                                       false);
 
     // Set up post script writer
-    bezier::PostScriptWriter ps_writer("wave.ps",
+    bezier::PostScriptWriter ps_writer("wave.eps",
                                        {Eigen::Vector2d(-0.5, -4), Eigen::Vector2d(2 * M_PI + 0.5, 4)},
                                        Eigen::Vector2d(600, 300));
 

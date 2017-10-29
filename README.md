@@ -59,7 +59,7 @@ int main(){
 
   // Write output to postscript file
   bezier::PostScriptWriter ps_writer(
-                                    "example.ps",                                     // file name
+                                    "example.eps",                                    // file name
                                     {Vector2d(-0.5, -1.5), Vector2d(2*M_PI+0.5, 1.5)} // limits
                                     );
   ps_writer.color(1, 0, 0); ps_writer.filled(true);

@@ -41,7 +41,7 @@ int main(){
     double y_max = 2;
     double ps_y = 300;
     double ps_x = ps_y * (x_max-x_min) / (y_max-y_min);
-    bezier::PostScriptWriter ps_writer("circles.ps",
+    bezier::PostScriptWriter ps_writer("circles.eps",
                                        {Vector2d(x_min, y_min), Vector2d(x_max, y_max)},
                                        Vector2d(ps_x, ps_y));
 

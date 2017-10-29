@@ -35,7 +35,7 @@ int main(){
     double y_max = 1.5;
     double ps_y = 300;
     double ps_x = 300;
-    bezier::PostScriptWriter ps_writer("interpolation.ps", {Vector2d(-1.5, -1.5), Vector2d(1.5, 1.5)});
+    bezier::PostScriptWriter ps_writer("interpolation.eps", {Vector2d(-1.5, -1.5), Vector2d(1.5, 1.5)});
 
     // Write data points
     ps_writer.filled(true);
