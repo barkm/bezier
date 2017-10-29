@@ -78,4 +78,4 @@ g++ example.cpp -o example.out -std=c++11 -I /usr/local/include/eigen3/ -I insta
 ```
 
 
-More examples can be found in the [examples](examples/) directory. Samples can be found in the [samples](examples/samples/) directory.
+More examples can be found in the [examples](examples/) directory. Samples can be found in the [samples](samples/) directory.
