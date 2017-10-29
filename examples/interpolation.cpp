@@ -1,3 +1,9 @@
+/**
+ * Fit composite Bezier curve of piecewise cubic Bezier curves to
+ * wave circle data such that the composite curve interpolates each
+ * data point.
+ */
+
 #include <bezier/bezier.h>
 
 using Eigen::Vector2d;
@@ -19,6 +25,8 @@ int main(){
         circle.push_back(circle_point);
     }
 
+    // Set joints to be equally spaced and choose number of curves such that
+    // the data points are interpolated
     int bezier_degree = 3;
     int number_of_curves = static_cast<int>(static_cast<double>(theta.rows()) / (bezier_degree - 1));
     std::vector<int> joints;
@@ -26,6 +34,7 @@ int main(){
         joints.push_back((bezier_degree-1) * i - 1);
     }
 
+    // Fit bezier curves
     bezier::CompositeBezierCurve bezier = bezier::fit_composite_bezier_curve(circle, joints, bezier_degree, true);
 
     // Set up postscript writer

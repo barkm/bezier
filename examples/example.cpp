@@ -1,3 +1,8 @@
+/**
+ * Fit a composite Bezier curve of piecewise Bezier curves of varying degree
+ * to sine wave data.
+ */
+
 #include <bezier/bezier.h>
 using namespace Eigen;
 int main(){

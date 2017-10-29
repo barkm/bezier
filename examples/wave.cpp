@@ -1,3 +1,7 @@
+/**
+ * Fit a single cubic Bezier curve to noisy sine wave data.
+ */
+
 #include <bezier/bezier.h>
 
 int main(){

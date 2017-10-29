@@ -48,7 +48,7 @@ add_executable(tests
         test/math_test.cpp
         test/utilities_test.cpp
         test/curve_test.cpp
-        test/postscript_test.cpp)
+        )
 target_link_libraries(tests bezier)
 
 # Run the tests after compilation

@@ -1,3 +1,9 @@
+/**
+ * Fit composite Bezier curves to noisy circle data.
+ * The composite curves consists of Bezier curves of different
+ * degrees.
+ */
+
 #include <bezier/bezier.h>
 
 using Eigen::Vector2d;

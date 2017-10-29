@@ -15,6 +15,12 @@
 namespace bezier {
     using Eigen::Vector2d;
 
+    /**
+     * Write curve to PostScript
+     * @param ps_writer : PostScriptWriter to write to
+     * @param curve : composite Bezier curve or Bezier curve
+     * @param show_control_points : true/false
+     */
     void write_curve(PostScriptWriter &ps_writer,
                      const Curve *curve,
                      bool show_control_points=false);
