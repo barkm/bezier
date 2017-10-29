@@ -17,7 +17,7 @@ namespace bezier {
 
     void write_curve(PostScriptWriter &ps_writer,
                      const Curve *curve,
-                     bool show_control_points);
+                     bool show_control_points=false);
 
     void _write_control_points(PostScriptWriter & ps_writer, const vector<VectorXd> & points);
 

@@ -55,6 +55,9 @@ target_link_libraries(tests bezier)
 add_custom_command(TARGET tests POST_BUILD COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/tests)
 
 # Examples
+add_executable(example examples/example.cpp)
+target_link_libraries(example bezier)
+
 add_executable(circles examples/circles.cpp)
 target_link_libraries(circles bezier)
 
