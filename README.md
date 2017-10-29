@@ -21,7 +21,8 @@ To install the library into the directory `installation` run
 git clone https://github.com/pbarkm/bezier.git
 cd bezier
 mkdir build
-cmake .. -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=installation/
+cd build
+cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=installation/ ..
 make -j
 make install
 ```
