@@ -15,7 +15,7 @@ namespace bezier {
         _dimension = _bezier_curves[0].dimension();
 
         for(int i = 1; i < _bezier_curves.size(); i++){
-            if(_bezier_curves[i-1](0) != _bezier_curves[i](0)){
+            if(_bezier_curves[i-1](1) != _bezier_curves[i](0)){
                 throw std::invalid_argument("A composite Bezier curve must be continuous.");
             }
             if(_bezier_curves[i].dimension() != _dimension){

@@ -13,11 +13,20 @@ TEST_CASE("Composite Bezier curve construction", "[construction]"){
 
     SECTION("invalid construction"){
         REQUIRE_THROWS_AS(bezier::CompositeBezierCurve({cubic2, cubic3, cubic1}), std::invalid_argument);
+        REQUIRE_THROWS_AS(bezier::CompositeBezierCurve({cubic1.control_points(),
+                                                        cubic3.control_points(),
+                                                        cubic2.control_points()}), std::invalid_argument);
     }
 
-    bezier::CompositeBezierCurve composite = {cubic1, cubic2, cubic3};
+    SECTION("valid construction"){
+        REQUIRE_NOTHROW(bezier::CompositeBezierCurve({cubic1, cubic2, cubic3}));
+        REQUIRE_NOTHROW(bezier::CompositeBezierCurve({cubic1.control_points(),
+                                                        cubic2.control_points(),
+                                                        cubic3.control_points()}));
+    }
 
     SECTION("dimension"){
+        bezier::CompositeBezierCurve composite = {cubic1, cubic2, cubic3};
         REQUIRE(composite.dimension() == 2);
     }
 }
