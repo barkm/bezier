@@ -18,7 +18,7 @@ The only dependencies are [Eigen](http://eigen.tuxfamily.org/) (tested with 3.3.
 To install the library into the directory `installation` run
 
 ```
-git clone https://github.com/pbarkm/bezier.git
+git clone https://github.com/barkm/bezier.git
 cd bezier
 mkdir build
 cd build
