@@ -1,6 +1,8 @@
 # Bezier
 Library for least-square fitting [composite Bezier curves](https://en.wikipedia.org/wiki/Composite_B%C3%A9zier_curve).
 
+[![Composite Bezier curves fitted to noisy circle data](samples/circles.png)](samples/circles.pdf)
+
 ## Features
 
 * Method for least square fitting _C<sup>1</sup>_ continuous composite Bezier curves
